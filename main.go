@@ -1,13 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // type server interface {
 // 	Run(int) error
 // }
 
 func main() {
-	fmt.Println("hello world")
+	fmt.Println(services.ratings.TheWorld())
 	// var (
 	// 	port        = flag.Int("port", 8080, "The service port")
 	// 	profileaddr = flag.String("detailsaddr", "details:8080", "details service addr")

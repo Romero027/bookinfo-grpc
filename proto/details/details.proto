@@ -1,0 +1,16 @@
+syntax = "proto3";
+option go_package = "./proto/details";
+
+package details;
+
+service Details {
+    rpc getRatings(Product) returns (Result);
+}
+
+message Product {
+    string id = 1;
+}
+
+message Result {
+    string details = 1;
+}

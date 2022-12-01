@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	ratings "github.com/Romero027/bookinfo-grpc/ratings"
+	"github.com/Romero027/bookinfo-grpc/ratings"
 )
 
 // type server interface {

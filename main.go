@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+
+	ratings "github.com/Romero027/bookinfo-grpc/ratings"
 )
 
 // type server interface {
@@ -9,7 +11,7 @@ import (
 // }
 
 func main() {
-	fmt.Println(services.ratings.TheWorld())
+	fmt.Println(ratings.TheWorld())
 	// var (
 	// 	port        = flag.Int("port", 8080, "The service port")
 	// 	profileaddr = flag.String("detailsaddr", "details:8080", "details service addr")

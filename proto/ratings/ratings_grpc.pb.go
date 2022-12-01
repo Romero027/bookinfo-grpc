@@ -18,86 +18,86 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// ReviewsClient is the client API for Reviews service.
+// RatingsClient is the client API for Ratings service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ReviewsClient interface {
-	GetReviews(ctx context.Context, in *Product, opts ...grpc.CallOption) (*Result, error)
+type RatingsClient interface {
+	GetRatings(ctx context.Context, in *Product, opts ...grpc.CallOption) (*Result, error)
 }
 
-type reviewsClient struct {
+type ratingsClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewReviewsClient(cc grpc.ClientConnInterface) ReviewsClient {
-	return &reviewsClient{cc}
+func NewRatingsClient(cc grpc.ClientConnInterface) RatingsClient {
+	return &ratingsClient{cc}
 }
 
-func (c *reviewsClient) GetReviews(ctx context.Context, in *Product, opts ...grpc.CallOption) (*Result, error) {
+func (c *ratingsClient) GetRatings(ctx context.Context, in *Product, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/ratings.Reviews/getReviews", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ratings.Ratings/getRatings", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// ReviewsServer is the server API for Reviews service.
-// All implementations must embed UnimplementedReviewsServer
+// RatingsServer is the server API for Ratings service.
+// All implementations must embed UnimplementedRatingsServer
 // for forward compatibility
-type ReviewsServer interface {
-	GetReviews(context.Context, *Product) (*Result, error)
-	mustEmbedUnimplementedReviewsServer()
+type RatingsServer interface {
+	GetRatings(context.Context, *Product) (*Result, error)
+	mustEmbedUnimplementedRatingsServer()
 }
 
-// UnimplementedReviewsServer must be embedded to have forward compatible implementations.
-type UnimplementedReviewsServer struct {
+// UnimplementedRatingsServer must be embedded to have forward compatible implementations.
+type UnimplementedRatingsServer struct {
 }
 
-func (UnimplementedReviewsServer) GetReviews(context.Context, *Product) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetReviews not implemented")
+func (UnimplementedRatingsServer) GetRatings(context.Context, *Product) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRatings not implemented")
 }
-func (UnimplementedReviewsServer) mustEmbedUnimplementedReviewsServer() {}
+func (UnimplementedRatingsServer) mustEmbedUnimplementedRatingsServer() {}
 
-// UnsafeReviewsServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ReviewsServer will
+// UnsafeRatingsServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RatingsServer will
 // result in compilation errors.
-type UnsafeReviewsServer interface {
-	mustEmbedUnimplementedReviewsServer()
+type UnsafeRatingsServer interface {
+	mustEmbedUnimplementedRatingsServer()
 }
 
-func RegisterReviewsServer(s grpc.ServiceRegistrar, srv ReviewsServer) {
-	s.RegisterService(&Reviews_ServiceDesc, srv)
+func RegisterRatingsServer(s grpc.ServiceRegistrar, srv RatingsServer) {
+	s.RegisterService(&Ratings_ServiceDesc, srv)
 }
 
-func _Reviews_GetReviews_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Ratings_GetRatings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Product)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ReviewsServer).GetReviews(ctx, in)
+		return srv.(RatingsServer).GetRatings(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ratings.Reviews/getReviews",
+		FullMethod: "/ratings.Ratings/getRatings",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReviewsServer).GetReviews(ctx, req.(*Product))
+		return srv.(RatingsServer).GetRatings(ctx, req.(*Product))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Reviews_ServiceDesc is the grpc.ServiceDesc for Reviews service.
+// Ratings_ServiceDesc is the grpc.ServiceDesc for Ratings service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Reviews_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "ratings.Reviews",
-	HandlerType: (*ReviewsServer)(nil),
+var Ratings_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "ratings.Ratings",
+	HandlerType: (*RatingsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "getReviews",
-			Handler:    _Reviews_GetReviews_Handler,
+			MethodName: "getRatings",
+			Handler:    _Ratings_GetRatings_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

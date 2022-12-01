@@ -1,103 +1,112 @@
-package productpage
+package services
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/Romero027/bookinfo-grpc/proto/details"
+	"github.com/Romero027/bookinfo-grpc/proto/reviews"
+	"google.golang.org/grpc"
 )
 
+func dial(addr string) *grpc.ClientConn {
+	opts := []grpc.DialOption{
+		grpc.WithInsecure(),
+	}
+
+	conn, err := grpc.Dial(addr, opts...)
+	if err != nil {
+		panic(fmt.Sprintf("ERROR: dial error: %v", err))
+	}
+
+	return conn
+}
+
 // NewFrontend returns a new server
-func NewProductPage(t opentracing.Tracer, searchconn, profileconn *grpc.ClientConn) *ProductPage {
+func NewProductPage(reviewsddr string, detailsaddr string) *ProductPage {
 	return &ProductPage{
-		searchClient:  search.NewSearchClient(searchconn),
-		profileClient: profile.NewProfileClient(profileconn),
-		tracer:        t,
+		detailsClient: details.NewDetailsClient(dial(reviewsddr)),
+		reviewsClient: reviews.NewReviewsClient(dial(detailsaddr)),
 	}
 }
 
 // Frontend implements frontend service
 type ProductPage struct {
-	detailsClient details.DetailsCient
-	ratingsClient ratings.ratingsClient
+	detailsClient details.DetailsClient
 	reviewsClient reviews.ReviewsClient
+	user          string
+}
+
+type Product struct {
+	id int
+	title string
+	descriptionHtml string
 }
 
 // Run the server
-func (s *Frontend) Run(port int) error {
-	mux.Handle("/", http.FileServer(http.Dir("public")))
-	mux.Handle("/hotels", http.HandlerFunc(s.searchHandler))
+func (s *ProductPage) Run(port int) error {
+	http.Handle("/", http.FileServer(http.Dir("static")))
+	http.Handle("/index", http.FileServer(http.Dir("static")))
+	http.HandleFunc("/login", s.loginHandler)
+	http.HandleFunc("/logout", s.logoutHandler)
+	http.HandleFunc("/productpage", s.productpageHandler)
+	http.HandleFunc("/products", s.productsHandler)
+	http.HandleFunc("/reviews", s.reviewsHandler)
 
-	return http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
+	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }
 
-func (s *Frontend) searchHandler(w http.ResponseWriter, r *http.Request) {
+func (s *ProductPage) loginHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	user := r.URL.Query().Get("user")
+	s.user = user
+
+	json.NewEncoder(w).Encode("Login Success!")
+}
+
+func (s *ProductPage) logoutHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	s.user = ""
+
+	json.NewEncoder(w).Encode("Logout Success!")
+}
+
+func (s *ProductPage) productpageHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	s.user = ""
+
+	json.NewEncoder(w).Encode("Logout Success!")
+}
+
+func (s *ProductPage) productsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	product := Product{
+		id: 0,
+		title: "The Comedy of Errors",
+		descriptionHtml: "<a href=\"https://en.wikipedia.org/wiki/The_Comedy_of_Errors\">Wikipedia Summary</a>: The Comedy of Errors is one of <b>William Shakespeare\'s</b> early plays. It is his shortest and one of his most farcical comedies, with a major part of the humour coming from slapstick and mistaken identity, in addition to puns and word play."
+	}
+	
+	json.NewEncoder(w).Encode(product)
+}
+
+func (s *ProductPage) reviewsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	ctx := r.Context()
+	productID := strconv.Atoi(r.URL.Query().Get("productID"))
 
-	// in/out dates from query params
-	inDate, outDate := r.URL.Query().Get("inDate"), r.URL.Query().Get("outDate")
-	if inDate == "" || outDate == "" {
-		http.Error(w, "Please specify inDate/outDate params", http.StatusBadRequest)
-		return
-	}
-
-	// search for best hotels
-	// TODO(hw): allow lat/lon from input params
-	searchResp, err := s.searchClient.Nearby(ctx, &search.NearbyRequest{
-		Lat:     37.7749,
-		Lon:     -122.4194,
-		InDate:  inDate,
-		OutDate: outDate,
+	reviewsRes, err := s.reviewsClient.GetReviews(ctx, &reviews.Product{
+		Id: strinproductID,
 	})
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// grab locale from query params or default to en
-	locale := r.URL.Query().Get("locale")
-	if locale == "" {
-		locale = "en"
-	}
-
-	// hotel profiles
-	profileResp, err := s.profileClient.GetProfiles(ctx, &profile.Request{
-		HotelIds: searchResp.HotelIds,
-		Locale:   locale,
-	})
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	json.NewEncoder(w).Encode(geoJSONResponse(profileResp.Hotels))
+	json.NewEncoder(w).Encode(reviewsRes)
 }
 
-// return a geoJSON response that allows google map to plot points directly on map
-// https://developers.google.com/maps/documentation/javascript/datalayer#sample_geojson
-func geoJSONResponse(hs []*profile.Hotel) map[string]interface{} {
-	fs := []interface{}{}
 
-	for _, h := range hs {
-		fs = append(fs, map[string]interface{}{
-			"type": "Feature",
-			"id":   h.Id,
-			"properties": map[string]string{
-				"name":         h.Name,
-				"phone_number": h.PhoneNumber,
-			},
-			"geometry": map[string]interface{}{
-				"type": "Point",
-				"coordinates": []float32{
-					h.Address.Lon,
-					h.Address.Lat,
-				},
-			},
-		})
-	}
-
-	return map[string]interface{}{
-		"type":     "FeatureCollection",
-		"features": fs,
-	}
-}

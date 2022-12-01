@@ -4,7 +4,7 @@ option go_package = "./proto/details";
 package details;
 
 service Details {
-    rpc getRatings(Product) returns (Result);
+    rpc getDetails(Product) returns (Result);
 }
 
 message Product {
@@ -12,5 +12,5 @@ message Product {
 }
 
 message Result {
-    string details = 1;
+    repeated string details = 1;
 }

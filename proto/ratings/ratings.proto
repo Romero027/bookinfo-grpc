@@ -3,8 +3,8 @@ option go_package = "./proto/ratings";
 
 package ratings;
 
-service Reviews {
-    rpc getReviews(Product) returns (Result);
+service Ratings {
+    rpc getRatings(Product) returns (Result);
 }
 
 message Product {
@@ -12,5 +12,5 @@ message Product {
 }
 
 message Result {
-    repeated string reviews = 1;
+    repeated string ratings = 1;
 }

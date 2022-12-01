@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DetailsClient interface {
-	GetRatings(ctx context.Context, in *Product, opts ...grpc.CallOption) (*Result, error)
+	GetDetails(ctx context.Context, in *Product, opts ...grpc.CallOption) (*Result, error)
 }
 
 type detailsClient struct {
@@ -33,9 +33,9 @@ func NewDetailsClient(cc grpc.ClientConnInterface) DetailsClient {
 	return &detailsClient{cc}
 }
 
-func (c *detailsClient) GetRatings(ctx context.Context, in *Product, opts ...grpc.CallOption) (*Result, error) {
+func (c *detailsClient) GetDetails(ctx context.Context, in *Product, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/details.Details/getRatings", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/details.Details/getDetails", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (c *detailsClient) GetRatings(ctx context.Context, in *Product, opts ...grp
 // All implementations must embed UnimplementedDetailsServer
 // for forward compatibility
 type DetailsServer interface {
-	GetRatings(context.Context, *Product) (*Result, error)
+	GetDetails(context.Context, *Product) (*Result, error)
 	mustEmbedUnimplementedDetailsServer()
 }
 
@@ -54,8 +54,8 @@ type DetailsServer interface {
 type UnimplementedDetailsServer struct {
 }
 
-func (UnimplementedDetailsServer) GetRatings(context.Context, *Product) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetRatings not implemented")
+func (UnimplementedDetailsServer) GetDetails(context.Context, *Product) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDetails not implemented")
 }
 func (UnimplementedDetailsServer) mustEmbedUnimplementedDetailsServer() {}
 
@@ -70,20 +70,20 @@ func RegisterDetailsServer(s grpc.ServiceRegistrar, srv DetailsServer) {
 	s.RegisterService(&Details_ServiceDesc, srv)
 }
 
-func _Details_GetRatings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Details_GetDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Product)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DetailsServer).GetRatings(ctx, in)
+		return srv.(DetailsServer).GetDetails(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/details.Details/getRatings",
+		FullMethod: "/details.Details/getDetails",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DetailsServer).GetRatings(ctx, req.(*Product))
+		return srv.(DetailsServer).GetDetails(ctx, req.(*Product))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -96,8 +96,8 @@ var Details_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*DetailsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "getRatings",
-			Handler:    _Details_GetRatings_Handler,
+			MethodName: "getDetails",
+			Handler:    _Details_GetDetails_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 
@@ -10,54 +9,49 @@ import (
 )
 
 type server interface {
-	Run(int) error
+	Run() error
 }
 
 func main() {
 	var (
-		port            = flag.Int("port", 8080, "The service port")
-		detailsaddr     = flag.String("detailsaddr", "details:8080", "details service addr")
-		productpageaddr = flag.String("productpageaddr", "productpage:8080", "productpage server addr")
-		ratingsaddr     = flag.String("ratingsaddr", "ratings:8080", "ratings server addr")
-		reviewsddr      = flag.String("reviewsaddr", "reviews:8080", "reviewsxzxz service addr")
+		// port            = flag.Int("port", 8080, "The service port")
+		productpageport = flag.Int("productpageaddr", 8080, "productpage server port")
+		detailsport     = flag.Int("detailsport", 8081, "details service port")
+		ratingsport     = flag.Int("ratingsport", 8082, "details service port")
+		reviewsport     = flag.Int("reviewsport", 8083, "details service port")
+		// detailsaddr     = flag.String("detailsaddr", "details:8081", "reviews service addr")
+		// ratingsaddr     = flag.String("ratingsaddr", "ratings:8082", "ratings server addr")
+		// reviewsaddr     = flag.String("reviewsaddr", "reviews:8083", "reviews service addr")
+		detailsaddr = flag.String("detailsaddr", ":8081", "reviews service addr")
+		ratingsaddr = flag.String("ratingsaddr", ":8082", "ratings server addr")
+		reviewsaddr = flag.String("reviewsaddr", ":8083", "reviews service addr")
 	)
+	flag.Parse()
 
 	var srv server
 	var cmd = os.Args[1]
 
 	switch cmd {
 	case "details":
-		srv = services.NewDetails()
+		srv = services.NewDetails(*detailsport)
 	case "ratings":
-		srv = services.NewRatings()
+		srv = services.NewRatings(*ratingsport)
 	case "reviews":
-		srv = services.NewReviews()
+		srv = services.NewReviews(
+			*reviewsport,
+			*ratingsaddr,
+		)
 	case "productpage":
 		srv = services.NewProductPage(
-			reviewsddr,
-			detailsaddr,
+			*productpageport,
+			*reviewsaddr,
+			*detailsaddr,
 		)
-	case "frontend":
-		srv = services.NewFrontend()
 	default:
 		log.Fatalf("unknown cmd: %s", cmd)
 	}
 
-	if err := srv.Run(*port); err != nil {
+	if err := srv.Run(); err != nil {
 		log.Fatalf("run %s error: %v", cmd, err)
 	}
-}
-
-func dial(addr string) *grpc.ClientConn {
-	opts := []grpc.DialOption{
-		grpc.WithInsecure(),
-		grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(t)),
-	}
-
-	conn, err := grpc.Dial(addr, opts...)
-	if err != nil {
-		panic(fmt.Sprintf("ERROR: dial error: %v", err))
-	}
-
-	return conn
 }

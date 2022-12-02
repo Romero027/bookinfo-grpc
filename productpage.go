@@ -1,14 +1,28 @@
 package services
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"html/template"
+	"log"
 	"net/http"
 
 	"github.com/Romero027/bookinfo-grpc/proto/details"
 	"github.com/Romero027/bookinfo-grpc/proto/reviews"
 	"google.golang.org/grpc"
 )
+
+func (s *ProductPage) initializeProucts() {
+	s.Products = []Product{{
+		ID:    0,
+		Title: "The Comedy of Errors",
+	}, {
+		ID:    1,
+		Title: "1984",
+	},
+	}
+}
 
 func dial(addr string) *grpc.ClientConn {
 	opts := []grpc.DialOption{
@@ -24,28 +38,33 @@ func dial(addr string) *grpc.ClientConn {
 }
 
 // NewFrontend returns a new server
-func NewProductPage(reviewsddr string, detailsaddr string) *ProductPage {
+func NewProductPage(port int, reviewsddr string, detailsaddr string) *ProductPage {
 	return &ProductPage{
-		detailsClient: details.NewDetailsClient(dial(reviewsddr)),
-		reviewsClient: reviews.NewReviewsClient(dial(detailsaddr)),
+		port:          port,
+		detailsClient: details.NewDetailsClient(dial(detailsaddr)),
+		reviewsClient: reviews.NewReviewsClient(dial(reviewsddr)),
+		User:          "None",
 	}
 }
 
 // Frontend implements frontend service
 type ProductPage struct {
+	port          int
 	detailsClient details.DetailsClient
 	reviewsClient reviews.ReviewsClient
-	user          string
+	User          string
+	Products      []Product
 }
 
 type Product struct {
-	id int
-	title string
-	descriptionHtml string
+	ID      int
+	Title   string
+	Reviews []*reviews.Review
+	Details []*details.Detail
 }
 
 // Run the server
-func (s *ProductPage) Run(port int) error {
+func (s *ProductPage) Run() error {
 	http.Handle("/", http.FileServer(http.Dir("static")))
 	http.Handle("/index", http.FileServer(http.Dir("static")))
 	http.HandleFunc("/login", s.loginHandler)
@@ -53,60 +72,105 @@ func (s *ProductPage) Run(port int) error {
 	http.HandleFunc("/productpage", s.productpageHandler)
 	http.HandleFunc("/products", s.productsHandler)
 	http.HandleFunc("/reviews", s.reviewsHandler)
+	http.HandleFunc("/details", s.detailsHandler)
 
-	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	log.Printf("ProductPage server running at port: %d", s.port)
+	s.initializeProucts()
+	return http.ListenAndServe(fmt.Sprintf(":%d", s.port), nil)
 }
 
 func (s *ProductPage) loginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	user := r.URL.Query().Get("user")
-	s.user = user
+	// user := r.URL.Query().Get("user")
+	s.User = "Jason"
 
 	json.NewEncoder(w).Encode("Login Success!")
 }
 
 func (s *ProductPage) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	s.user = ""
+	s.User = "None"
 
 	json.NewEncoder(w).Encode("Logout Success!")
 }
 
 func (s *ProductPage) productpageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	s.user = ""
+	ctx := r.Context()
+	productID := 0
+	reviewsRes, err := s.getReviewsDetails(ctx, productID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	json.NewEncoder(w).Encode("Logout Success!")
+	detailRes, err := s.getProductDetails(ctx, productID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	s.Products[productID].Reviews = reviewsRes.Review
+	s.Products[productID].Details = detailRes.Detail
+
+	tmpl := template.Must(template.ParseFiles("static/productpage.html"))
+
+	tmpl.Execute(w, s)
 }
 
 func (s *ProductPage) productsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 
-	product := Product{
-		id: 0,
-		title: "The Comedy of Errors",
-		descriptionHtml: "<a href=\"https://en.wikipedia.org/wiki/The_Comedy_of_Errors\">Wikipedia Summary</a>: The Comedy of Errors is one of <b>William Shakespeare\'s</b> early plays. It is his shortest and one of his most farcical comedies, with a major part of the humour coming from slapstick and mistaken identity, in addition to puns and word play."
+	err := json.NewEncoder(w).Encode(s.Products)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
 	}
-	
-	json.NewEncoder(w).Encode(product)
 }
 
 func (s *ProductPage) reviewsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	ctx := r.Context()
-	productID := strconv.Atoi(r.URL.Query().Get("productID"))
+	// productID, err := strconv.Atoi(r.URL.Query().Get("productID"))
+	productID := 0
 
-	reviewsRes, err := s.reviewsClient.GetReviews(ctx, &reviews.Product{
-		Id: strinproductID,
-	})
+	reviewsRes, err := s.getReviewsDetails(ctx, productID)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	json.NewEncoder(w).Encode(reviewsRes)
+	err = json.NewEncoder(w).Encode(reviewsRes)
 }
 
+func (s *ProductPage) detailsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	ctx := r.Context()
+	// productID, err := strconv.Atoi(r.URL.Query().Get("productID"))
+	productID := 0
 
+	detailRes, err := s.getProductDetails(ctx, productID)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(detailRes)
+}
+
+func (s *ProductPage) getProductDetails(ctx context.Context, id int) (*details.Result, error) {
+	detailRes, err := s.detailsClient.GetDetails(ctx, &details.Product{
+		Id: int32(id),
+	})
+	return detailRes, err
+}
+
+func (s *ProductPage) getReviewsDetails(ctx context.Context, id int) (*reviews.Result, error) {
+	reviewsRes, err := s.reviewsClient.GetReviews(ctx, &reviews.Product{
+		Id: int32(id),
+	})
+	return reviewsRes, err
+}

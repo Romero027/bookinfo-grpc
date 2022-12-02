@@ -8,9 +8,21 @@ service Details {
 }
 
 message Product {
-    string id = 1;
+    int32 id = 1;
+}
+
+message Detail {
+    int32 ProductID = 1;
+    string author = 2;
+    int32 year = 3;
+    string type = 4;
+    int32 pages = 5;
+    string publisher = 6;
+    string language = 7;
+    string ISBN10 = 8;
+    string ISBN13 = 9;
 }
 
 message Result {
-    repeated string details = 1;
+    repeated Detail detail = 1;
 }

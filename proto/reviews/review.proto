@@ -8,9 +8,17 @@ service Reviews {
 }
 
 message Product {
-    string id = 1;
+    int32 id = 1;
+}
+
+message Review {
+    int32 ProductID = 1;
+    string reviewer = 2;
+    string text = 3;
+    optional int32 stars = 4; 
+    optional string color = 5;
 }
 
 message Result {
-    repeated string reviews = 1;
+    repeated Review review = 1;
 }

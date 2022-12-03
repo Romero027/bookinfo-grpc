@@ -4,9 +4,13 @@ This repo contains gRPC implementation of the bookinfo application designed by I
 
 See <https://istio.io/docs/examples/bookinfo/>.
 
-|![Bookinfo Call Graph](./bookinfo.png)|
+<!-- |![Bookinfo Call Graph](./bookinfo.png)|
 |:--:| 
-| *Bookinfo Application Call Graph* |
+| *Bookinfo Application Call Graph* | -->
+
+## Installation
+
+You can use `. ./scripts/k8s_setup.sh` and `. ./install.sh` to install/build kubernetes, istio, and wrk/wrk2.
 
 ## Build docker images and push them to docker hub
 
@@ -20,6 +24,12 @@ sudo bash build-images.sh # you need to change the username and run docker login
 k apply -f kubernetes/bookinfo-grpc.yaml
 ```
 
+
+## Run load generator
+
+```bash
+
+```
 
 ## Development
 

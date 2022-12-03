@@ -115,6 +115,7 @@ metadata:
     app: reviews
     service: reviews
 spec:
+  # sessionAffinity: ClientIP
   ports:
   - port: 8083
     name: grpc
@@ -235,6 +236,7 @@ metadata:
     app: productpage
     service: productpage
 spec:
+  clusterIP: 10.96.88.88
   ports:
   - port: 8080
     name: http

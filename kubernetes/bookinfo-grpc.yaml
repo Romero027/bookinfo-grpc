@@ -156,7 +156,7 @@ spec:
         args: ["reviews"]
         imagePullPolicy: IfNotPresent
         env:
-        - name:
+        - name: REVIEWS_VERSION
           value: "v1"
         ports:
         - containerPort: 8083
@@ -188,7 +188,7 @@ spec:
         args: ["reviews"]
         imagePullPolicy: IfNotPresent
         env:
-        - name:
+        - name: REVIEWS_VERSION
           value: "v2"
         ports:
         - containerPort: 8083
@@ -220,7 +220,7 @@ spec:
         args: ["reviews"]
         imagePullPolicy: IfNotPresent
         env:
-        - name:
+        - name: REVIEWS_VERSION
           value: "v3"
         ports:
         - containerPort: 8083

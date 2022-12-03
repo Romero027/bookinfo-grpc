@@ -4,6 +4,10 @@ This repo contains gRPC implementation of the bookinfo application designed by I
 
 See <https://istio.io/docs/examples/bookinfo/>.
 
+|![Bookinfo Call Graph](./bookinfo.png)|
+|:--:| 
+| *Bookinfo Application Call Graph* |
+
 ## Build docker images and push them to docker hub
 
 ```bash

@@ -98,7 +98,7 @@ spec:
       serviceAccountName: bookinfo-ratings
       containers:
       - name: ratings
-        image: xzhu0027:bookinfo_grpc_ratings:latest
+        image: xzhu0027/bookinfo_grpc_ratings:latest
         command: ["/go/bin/cmd"]
         args: ["ratings"]
         imagePullPolicy: IfNotPresent

@@ -41,6 +41,6 @@ func (s *Ratings) Run() error {
 
 func (s *Ratings) GetRatings(ctx context.Context, req *ratings.Product) (*ratings.Result, error) {
 	res := new(ratings.Result)
-
+	res.Ratings = 5
 	return res, nil
 }

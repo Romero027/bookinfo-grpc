@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 
 	"github.com/Romero027/bookinfo-grpc/proto/ratings"
 	"github.com/Romero027/bookinfo-grpc/proto/reviews"
@@ -38,27 +39,54 @@ func (s *Reviews) Run() error {
 	srv := grpc.NewServer()
 	reviews.RegisterReviewsServer(srv, s)
 
-	log.Printf("Reviews server running at port: %d", s.port)
+	version := os.Getenv("REVIEWS_VERSION")
+	log.Printf("Reviews server (version: %s) running at port: %d", version, s.port)
 	return srv.Serve(lis)
 }
 
 func (s *Reviews) GetReviews(ctx context.Context, req *reviews.Product) (*reviews.Result, error) {
 	res := new(reviews.Result)
 
+	productID := req.GetId()
+
+	// TODO: Add a persistent storage for reviews
 	review1 := reviews.Review{
-		ProductID: 0,
+		ProductID: productID,
 		Reviewer:  "reviewer1",
 		Text:      "An extremely entertaining play by Shakespeare. The slapstick humour is refreshing!",
 	}
 
 	review2 := reviews.Review{
-		ProductID: 0,
+		ProductID: productID,
 		Reviewer:  "reviewer2",
 		Text:      "Absolutely fun and entertaining. The play lacks thematic depth when compared to other plays by Shakespeare.",
 	}
 
+	version := os.Getenv("REVIEWS_VERSION")
+
 	res.Review = append(res.Review, &review1)
 	res.Review = append(res.Review, &review2)
+
+	if version != "v1" {
+		log.Printf("Sending request to ratings service")
+		ratingsRes, err := s.ratingsClient.GetRatings(ctx, &ratings.Product{
+			Id: int32(productID),
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		rating := ratingsRes.GetRatings()
+		res.Stars = &rating
+
+		if version == "v2" {
+			color := "green"
+			res.Color = &color
+		} else {
+			color := "red"
+			res.Color = &color
+		}
+	}
 
 	return res, nil
 }

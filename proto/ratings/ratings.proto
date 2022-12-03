@@ -12,5 +12,5 @@ message Product {
 }
 
 message Result {
-    repeated string ratings = 1;
+    int32 ratings = 1;
 }

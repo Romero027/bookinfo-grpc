@@ -22,9 +22,9 @@ func main() {
 		detailsaddr     = flag.String("detailsaddr", "details:8081", "reviews service addr")
 		ratingsaddr     = flag.String("ratingsaddr", "ratings:8082", "ratings server addr")
 		reviewsaddr     = flag.String("reviewsaddr", "reviews:8083", "reviews service addr")
-		// detailsaddr = flag.String("detailsaddr", ":8081", "reviews service addr")
-		// ratingsaddr = flag.String("ratingsaddr", ":8082", "ratings server addr")
-		// reviewsaddr = flag.String("reviewsaddr", ":8083", "reviews service addr")
+		// detailsaddr     = flag.String("detailsaddr", ":8081", "reviews service addr")
+		// ratingsaddr     = flag.String("ratingsaddr", ":8082", "ratings server addr")
+		// reviewsaddr     = flag.String("reviewsaddr", ":8083", "reviews service addr")
 	)
 	flag.Parse()
 

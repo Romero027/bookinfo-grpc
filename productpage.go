@@ -61,6 +61,8 @@ type Product struct {
 	Title   string
 	Reviews []*reviews.Review
 	Details []*details.Detail
+	Stars   int
+	Color   string
 }
 
 // Run the server
@@ -98,12 +100,14 @@ func (s *ProductPage) productpageHandler(w http.ResponseWriter, r *http.Request)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	ctx := r.Context()
 	productID := 0
-	reviewsRes, err := s.getReviewsDetails(ctx, productID)
+	log.Printf("Sending request to reviews service")
+	reviewsRes, err := s.getProductReviews(ctx, productID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	log.Printf("Sending request to details service")
 	detailRes, err := s.getProductDetails(ctx, productID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -112,6 +116,13 @@ func (s *ProductPage) productpageHandler(w http.ResponseWriter, r *http.Request)
 
 	s.Products[productID].Reviews = reviewsRes.Review
 	s.Products[productID].Details = detailRes.Detail
+	s.Products[productID].Stars = -1
+	s.Products[productID].Color = "None"
+	log.Printf("%v", reviewsRes)
+	if stars := reviewsRes.GetStars(); stars != 0 {
+		s.Products[productID].Stars = int(stars)
+		s.Products[productID].Color = reviewsRes.GetColor()
+	}
 
 	tmpl := template.Must(template.ParseFiles("static/productpage.html"))
 
@@ -135,7 +146,7 @@ func (s *ProductPage) reviewsHandler(w http.ResponseWriter, r *http.Request) {
 	// productID, err := strconv.Atoi(r.URL.Query().Get("productID"))
 	productID := 0
 
-	reviewsRes, err := s.getReviewsDetails(ctx, productID)
+	reviewsRes, err := s.getProductReviews(ctx, productID)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -168,7 +179,7 @@ func (s *ProductPage) getProductDetails(ctx context.Context, id int) (*details.R
 	return detailRes, err
 }
 
-func (s *ProductPage) getReviewsDetails(ctx context.Context, id int) (*reviews.Result, error) {
+func (s *ProductPage) getProductReviews(ctx context.Context, id int) (*reviews.Result, error) {
 	reviewsRes, err := s.reviewsClient.GetReviews(ctx, &reviews.Product{
 		Id: int32(id),
 	})

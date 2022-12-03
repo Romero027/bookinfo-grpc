@@ -2,9 +2,6 @@
 
 set -ex
 
-cd $(dirname $0)/..
-
-
 EXEC=docker
 
 USER="xzhu0027"

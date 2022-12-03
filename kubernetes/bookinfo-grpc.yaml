@@ -1,4 +1,3 @@
-
 ##################################################################################################
 # Details service
 ##################################################################################################
@@ -12,7 +11,7 @@ metadata:
 spec:
   ports:
   - port: 8081
-    name: http
+    name: grpc
   selector:
     app: details
 ---
@@ -65,7 +64,7 @@ metadata:
 spec:
   ports:
   - port: 8082
-    name: http
+    name: grpc
   selector:
     app: ratings
 ---
@@ -118,7 +117,7 @@ metadata:
 spec:
   ports:
   - port: 8083
-    name: http
+    name: grpc
   selector:
     app: reviews
 ---

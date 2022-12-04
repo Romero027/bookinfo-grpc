@@ -28,7 +28,13 @@ k apply -f kubernetes/bookinfo-grpc.yaml
 ## Run load generator
 
 ```bash
+./wrk/wrk -t1 -c1 -d 10s http://10.96.88.88:8080 -L -s ./scripts/lua/bookinfo.lua
+```
 
+### Cleanup
+
+```bash
+bash ./scripts/cleanup.sh
 ```
 
 ## Development

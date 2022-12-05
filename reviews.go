@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-// NewRate returns a new server
+// NewReviews returns a new server
 func NewReviews(port int, ratingsaddr string) *Reviews {
 	return &Reviews{
 		name:          "reviews-server",
@@ -21,7 +21,7 @@ func NewReviews(port int, ratingsaddr string) *Reviews {
 	}
 }
 
-// Rate implements the reviews service
+// Reviews implements the reviews service
 type Reviews struct {
 	name          string
 	port          int
@@ -44,6 +44,8 @@ func (s *Reviews) Run() error {
 	return srv.Serve(lis)
 }
 
+// GetReviews returns the reviews of a product
+// TODO: Add a persistent storage or use online information
 func (s *Reviews) GetReviews(ctx context.Context, req *reviews.Product) (*reviews.Result, error) {
 	res := new(reviews.Result)
 

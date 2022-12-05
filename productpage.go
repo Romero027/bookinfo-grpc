@@ -37,7 +37,7 @@ func dial(addr string) *grpc.ClientConn {
 	return conn
 }
 
-// NewFrontend returns a new server
+// NewProductPage returns a new server
 func NewProductPage(port int, reviewsddr string, detailsaddr string) *ProductPage {
 	return &ProductPage{
 		port:          port,
@@ -47,7 +47,7 @@ func NewProductPage(port int, reviewsddr string, detailsaddr string) *ProductPag
 	}
 }
 
-// Frontend implements frontend service
+// ProductPage implements ProductPage service
 type ProductPage struct {
 	port          int
 	detailsClient details.DetailsClient
@@ -56,6 +56,7 @@ type ProductPage struct {
 	Products      []Product
 }
 
+// Product contains all information about a product
 type Product struct {
 	ID      int
 	Title   string

@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-// NewRate returns a new server
+// NewRatings returns a new server
 func NewRatings(port int) *Ratings {
 	return &Ratings{
 		name: "ratings-server",
@@ -18,7 +18,7 @@ func NewRatings(port int) *Ratings {
 	}
 }
 
-// Rate implements the reviews service
+// Ratings implements the reviews service
 type Ratings struct {
 	name string
 	port int
@@ -39,6 +39,8 @@ func (s *Ratings) Run() error {
 	return srv.Serve(lis)
 }
 
+// GetRatings returns the rating of a product from 1 to 5 stars (currently always return 5)
+// TODO: Add a persistent storage
 func (s *Ratings) GetRatings(ctx context.Context, req *ratings.Product) (*ratings.Result, error) {
 	res := new(ratings.Result)
 	res.Ratings = 5

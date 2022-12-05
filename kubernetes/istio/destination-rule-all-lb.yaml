@@ -18,6 +18,9 @@ metadata:
   name: reviews
 spec:
   host: reviews
+  trafficPolicy:
+    loadBalancer:
+      simple: RANDOM
   subsets:
   - name: v1
     labels:
@@ -25,6 +28,9 @@ spec:
   - name: v2
     labels:
       version: v2
+    trafficPolicy:
+      loadBalancer:
+        simple: ROUND_ROBIN
   - name: v3
     labels:
       version: v3
@@ -35,6 +41,9 @@ metadata:
   name: ratings
 spec:
   host: ratings
+  trafficPolicy:
+    loadBalancer:
+      simple: RANDOM
   subsets:
   - name: v1
     labels:
@@ -46,6 +55,9 @@ metadata:
   name: details
 spec:
   host: details
+  trafficPolicy:
+    loadBalancer:
+      simple: RANDOM
   subsets:
   - name: v1
     labels:

@@ -14,5 +14,5 @@ spec:
     mirror:
       host: reviews
       subset: v2
-    mirrorPercentage: # these requests are mirrored as “fire and forget”, which means that the responses are discarded.
+    mirrorPercentage: 
       value: 100.0 

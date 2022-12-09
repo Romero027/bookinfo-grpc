@@ -1,4 +1,4 @@
-module github.com/Romero027/bookinfo-grpc
+module github.com/livingshade/bookinfo-grpc
 
 go 1.18
 

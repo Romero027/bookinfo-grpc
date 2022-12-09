@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/Romero027/bookinfo-grpc/proto/ratings"
+	"github.com/livingshade/bookinfo-grpc/proto/ratings"
 	"google.golang.org/grpc"
 )
 

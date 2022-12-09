@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	services "github.com/Romero027/bookinfo-grpc"
+	services "github.com/livingshade/bookinfo-grpc"
 )
 
 type server interface {

@@ -34,7 +34,7 @@ k apply -f kubernetes/bookinfo-grpc.yaml
 ### Cleanup
 
 ```bash
-bash ./scripts/cleanup.sh
+bash ./kubernetes/cleanup.sh
 ```
 
 ## Development

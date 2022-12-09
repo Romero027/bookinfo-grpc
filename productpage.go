@@ -8,8 +8,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Romero027/bookinfo-grpc/proto/details"
-	"github.com/Romero027/bookinfo-grpc/proto/reviews"
+	"github.com/livingshade/bookinfo-grpc/proto/details"
+	"github.com/livingshade/bookinfo-grpc/proto/reviews"
 	"google.golang.org/grpc"
 )
 

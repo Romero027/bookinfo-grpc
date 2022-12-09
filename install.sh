@@ -13,7 +13,7 @@ sudo apt-get install -y sysstat
 
 # Python Dependencies
 sudo apt install -y python3-pip
-pip3 install -r requirements.txt
+# pip3 install -r requirements.txt
 
 # Install BCC (Ubuntu 20.04)
 cd $BOOKINFO_DIR
@@ -55,20 +55,10 @@ kubectl label namespace default istio-injection=enabled --overwrite
 sudo apt-get install luarocks -y
 sudo luarocks install luasocket
 
-cd $BOOKINFO_DIR/meshinsight/profiler
-# Delete if installed
-if [ -d "$BOOKINFO_DIR/meshinsight/profiler/wrk" ];
-then sudo rm -rf $BOOKINFO_DIR/meshinsight/profiler/wrk;
-fi
 git clone https://github.com/wg/wrk.git
 cd wrk
 make -j $(nproc)
 
-cd $BOOKINFO_DIR/meshinsight/profiler
-# Delete if installed
-if [ -d "$BOOKINFO_DIR/meshinsight/profiler/wrk2" ];
-then sudo rm -rf $BOOKINFO_DIR/meshinsight/profiler/wrk2;
-fi
 git clone https://github.com/giltene/wrk2.git
 cd wrk2
 make -j $(nproc)

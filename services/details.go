@@ -5,16 +5,27 @@ import (
 	"fmt"
 	"log"
 	"net"
-
+//	"time"
 	"github.com/Romero027/bookinfo-grpc/proto/details"
+
+//	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+//	"github.com/grpc-ecosystem/go-grpc-middleware/ratelimit"
+
+//	"github.com/Romero027/bookinfo-grpc/middleware/ratelimiter"
+
 	"google.golang.org/grpc"
+	"github.com/opentracing/opentracing-go"
+	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+
+
 )
 
 // NewDetails returns a new server
-func NewDetails(port int) *Details {
+func NewDetails(port int, tracer opentracing.Tracer) *Details {
 	return &Details{
 		name: "details-server",
 		port: port,
+		Tracer: tracer,
 	}
 }
 
@@ -23,18 +34,39 @@ type Details struct {
 	name string
 	port int
 	details.DetailsServer
+	Tracer opentracing.Tracer
 }
 
 // Run starts the server
 func (s *Details) Run() error {
-	srv := grpc.NewServer()
+
+	//conf := ratelimiter.NewRateConfig(10, time.Duration(60) * time.Second) 
+	// one request per second
+	//limiter := ratelimiter.NewFixedWindowRateLimiter(*conf)
+	
+	opts := []grpc.ServerOption{
+		// grpc_middleware.WithUnaryServerChain(
+		// 	ratelimit.UnaryServerInterceptor(limiter),
+		// ),
+		// grpc_middleware.WithStreamServerChain(
+		// 	ratelimit.StreamServerInterceptor(limiter),
+		// ),
+		grpc.UnaryInterceptor(
+			otgrpc.OpenTracingServerInterceptor(s.Tracer),
+		),
+	}
+
+	srv := grpc.NewServer(
+		opts...
+	)
+	
 	details.RegisterDetailsServer(srv, s)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-
+	log.Printf("Details before")
 	log.Printf("Details server running at port: %d", s.port)
 	return srv.Serve(lis)
 }

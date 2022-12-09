@@ -1,10 +1,12 @@
 #!/bin/bash
 
+. ./config.sh
+
 set -ex
 
 EXEC=docker
 
-USER="xzhu0027"
+USER=$DOCKER_USER
 
 TAG="latest"
 

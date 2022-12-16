@@ -23,16 +23,19 @@ type FixedWindowRateLimiter struct {
 	mu sync.Mutex
 }
 
-func (*FixedWindowRateLimiter) Limit() bool {
+func (limiter *FixedWindowRateLimiter) Limit() bool {
 	// todo make sure timer is correct 
-	mu.Lock()
-	defer mu.Unlock()
-	now := timer.Now()
-	if !time || last - now > conf.duration {
-		last = now
-		passed = 0
+	limiter.mu.Lock()
+	defer limiter.mu.Unlock()
+	now := time.Now()
+	last := limiter.last
+	dur := limiter.conf.duration
+	num := limiter.conf.num
+	if last.IsZero() || last.Sub(now).Nanoseconds() > dur {
+		limiter.last = now
+		limiter.passed = 0
 	} 
-	if passed >= conf.num {
+	if limiter.passed >= num {
 		return true
 	} else {
 		return false
@@ -45,17 +48,17 @@ func NewFixedWindowRateLimiter(conf RateConfig) *FixedWindowRateLimiter {
 	return res
 }
 
-func NewRateConfig(num int32, duration time.Duration) {
+func NewRateConfig(num int32, duration time.Duration) *RateConfig {
 	res := new(RateConfig)
 	res.num = num
-	res.duration = duration
+	res.duration = duration.Nanoseconds()
 	return res
 } 
 
 func Example() {
-	conf := NewRateConfig(60, timer.Duration(60) * timer.Second) 
+	conf := NewRateConfig(60, time.Duration(60) * time.Second) 
 	// one request per second
-	limiter = NewFixedWindowRateLimiter(conf)
+	limiter := NewFixedWindowRateLimiter(*conf)
 	
 	_ = grpc.NewServer(
 		grpc_middleware.WithUnaryServerChain(

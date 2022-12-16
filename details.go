@@ -10,7 +10,7 @@ import (
 
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/ratelimit"
-	"github.com/livingshade/bookinfo-grpc/middleware/ratelimiter"
+	"github.com/livingshade/bookinfo-grpc/ratelimiter"
 
 
 	"google.golang.org/grpc"

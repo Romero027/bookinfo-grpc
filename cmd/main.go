@@ -30,7 +30,7 @@ func main() {
 
 	var srv server
 	var cmd = os.Args[1]
-
+	println(cmd)
 	switch cmd {
 	case "details":
 		srv = services.NewDetails(*detailsport)

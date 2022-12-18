@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net"
-
+	"time"
 	"github.com/livingshade/bookinfo-grpc/proto/details"
 
-	"github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/ratelimit"
-	"github.com/livingshade/bookinfo-grpc/ratelimiter"
-
+	"github.com/livingshade/bookinfo-grpc/middleware/ratelimiter"
 
 	"google.golang.org/grpc"
 )
@@ -34,9 +33,9 @@ type Details struct {
 // Run starts the server
 func (s *Details) Run() error {
 
-	conf := NewRateConfig(60, timer.Duration(60) * timer.Second) 
+	conf := ratelimiter.NewRateConfig(60, time.Duration(60) * time.Second) 
 	// one request per second
-	limiter = NewFixedWindowRateLimiter(conf)
+	limiter := ratelimiter.NewFixedWindowRateLimiter(*conf)
 	
 	srv := grpc.NewServer(
 		grpc_middleware.WithUnaryServerChain(

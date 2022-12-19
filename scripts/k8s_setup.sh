@@ -39,7 +39,8 @@ cat <<EOF | sudo tee /etc/docker/daemon.json
   "log-opts": {
     "max-size": "100m"
   },
-  "storage-driver": "overlay2"
+  "storage-driver": "overlay2",
+  "data-root": "/mnt/docker/docker"
 }
 EOF
 
@@ -60,8 +61,12 @@ sudo apt-mark hold kubelet kubeadm kubectl
 sudo swapoff -a
 
 sudo rm -f /etc/containerd/config.toml
+cat <<EOF | sudo tee /etc/containerd/config.toml
+root = "/mnt/containerd/root"
+state = "/mnt/containerd/state"
+EOF
 sudo systemctl restart containerd
-
+sudo containerd config dump
 ### for control plane (paste this to /etc/systemd/system/kubelet.service.d/10-kubeadm.conf) 
 
 # Note: This dropin only works with kubeadm and kubelet v1.11+

@@ -29,7 +29,7 @@ echo \
 
 
 sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+sudo apt-get install docker-ce docker-ce-cli containerd.io=1.6.12-1 -y
 
 sudo mkdir -p /etc/docker
 cat <<EOF | sudo tee /etc/docker/daemon.json
@@ -80,6 +80,8 @@ sudo systemctl restart containerd
 sudo systemctl daemon-reload
 sudo systemctl restart kubelet
 
+sudo kubeadm reset -f
+sudo rm -rf $HOME/.kube
 sudo kubeadm init --pod-network-cidr 10.244.0.0/17 # check the output and execute command to setup the cluster
 
 mkdir -p $HOME/.kube

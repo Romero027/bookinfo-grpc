@@ -33,7 +33,7 @@ type Details struct {
 // Run starts the server
 func (s *Details) Run() error {
 
-	conf := ratelimiter.NewRateConfig(60, time.Duration(60) * time.Second) 
+	conf := ratelimiter.NewRateConfig(10, time.Duration(60) * time.Second) 
 	// one request per second
 	limiter := ratelimiter.NewFixedWindowRateLimiter(*conf)
 	

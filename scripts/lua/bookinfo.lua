@@ -18,3 +18,9 @@ end
 request = function()
     return productpage()
 end
+
+response = function(status, headers, body)
+    if status ~= 200 then
+        print(body)
+    end
+end

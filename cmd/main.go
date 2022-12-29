@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	services "github.com/Romero027/bookinfo-grpc"
+	services "github.com/livingshade/bookinfo-grpc"
 )
 
 type server interface {
@@ -30,7 +30,7 @@ func main() {
 
 	var srv server
 	var cmd = os.Args[1]
-
+	println(cmd)
 	switch cmd {
 	case "details":
 		srv = services.NewDetails(*detailsport)

@@ -1,8 +1,9 @@
-module github.com/Romero027/bookinfo-grpc
+module github.com/livingshade/bookinfo-grpc
 
 go 1.18
 
 require (
+	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	google.golang.org/grpc v1.51.0
 	google.golang.org/protobuf v1.28.1
 )

@@ -29,7 +29,7 @@ echo \
 
 
 sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+sudo apt-get install docker-ce docker-ce-cli containerd.io=1.6.12-1 -y
 
 sudo mkdir -p /etc/docker
 cat <<EOF | sudo tee /etc/docker/daemon.json
@@ -39,7 +39,8 @@ cat <<EOF | sudo tee /etc/docker/daemon.json
   "log-opts": {
     "max-size": "100m"
   },
-  "storage-driver": "overlay2"
+  "storage-driver": "overlay2",
+  "data-root": "/mnt/docker/docker"
 }
 EOF
 
@@ -59,9 +60,13 @@ sudo apt-mark hold kubelet kubeadm kubectl
 
 sudo swapoff -a
 
-sudo rm /etc/containerd/config.toml
+sudo rm -f /etc/containerd/config.toml
+cat <<EOF | sudo tee /etc/containerd/config.toml
+root = "/mnt/containerd/root"
+state = "/mnt/containerd/state"
+EOF
 sudo systemctl restart containerd
-
+sudo containerd config dump
 ### for control plane (paste this to /etc/systemd/system/kubelet.service.d/10-kubeadm.conf) 
 
 # Note: This dropin only works with kubeadm and kubelet v1.11+
@@ -80,6 +85,8 @@ sudo systemctl restart containerd
 sudo systemctl daemon-reload
 sudo systemctl restart kubelet
 
+sudo kubeadm reset -f
+sudo rm -rf $HOME/.kube
 sudo kubeadm init --pod-network-cidr 10.244.0.0/17 # check the output and execute command to setup the cluster
 
 mkdir -p $HOME/.kube

@@ -4,7 +4,7 @@ set -ex
 
 EXEC=docker
 
-USER="xzhu0027"
+USER="livingshade"
 
 TAG="latest"
 

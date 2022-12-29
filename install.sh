@@ -13,7 +13,7 @@ sudo apt-get install -y sysstat
 
 # Python Dependencies
 sudo apt install -y python3-pip
-pip3 install -r requirements.txt
+# pip3 install -r requirements.txt
 
 # Install BCC (Ubuntu 20.04)
 cd $BOOKINFO_DIR

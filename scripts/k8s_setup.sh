@@ -2,6 +2,8 @@
 
 set -ex
 
+. ./config.sh
+
 sudo modprobe br_netfilter
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
 br_netfilter
@@ -29,9 +31,10 @@ echo \
 
 
 sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io=1.6.12-1 -y
+sudo apt-get install docker-ce docker-ce-cli containerd.io=1.6.12-1 -y --allow-downgrades
 
 sudo mkdir -p /etc/docker
+sudo mkdir -p ${DOCKER_DATA_ROOT}
 cat <<EOF | sudo tee /etc/docker/daemon.json
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
@@ -40,7 +43,7 @@ cat <<EOF | sudo tee /etc/docker/daemon.json
     "max-size": "100m"
   },
   "storage-driver": "overlay2",
-  "data-root": "/mnt/docker/docker"
+  "data-root": "${DOCKER_DATA_ROOT}"
 }
 EOF
 
@@ -61,9 +64,11 @@ sudo apt-mark hold kubelet kubeadm kubectl
 sudo swapoff -a
 
 sudo rm -f /etc/containerd/config.toml
+sudo mkdir -p ${CONTAINERD_ROOT_PATH}
+sudo mkdir -p ${CONTAINERD_STATE_PATH} 
 cat <<EOF | sudo tee /etc/containerd/config.toml
-root = "/mnt/containerd/root"
-state = "/mnt/containerd/state"
+root = "${CONTAINERD_ROOT_PATH}"
+state = "${CONTAINERD_STATE_PATH}"
 EOF
 sudo systemctl restart containerd
 sudo containerd config dump

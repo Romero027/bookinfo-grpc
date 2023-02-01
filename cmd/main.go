@@ -5,7 +5,9 @@ import (
 	"log"
 	"os"
 
-	services "github.com/livingshade/bookinfo-grpc"
+	services "github.com/livingshade/bookinfo-grpc/services"
+	"github.com/livingshade/bookinfo-grpc/tracing"
+
 )
 
 type server interface {
@@ -30,24 +32,34 @@ func main() {
 	)
 	flag.Parse()
 
+
 	var srv server
 	var cmd = os.Args[1]
 	println(cmd)
+
+	tracer, err := tracing.Init(cmd, *jaegeraddr)
+	if err != nil {
+		log.Fatalf("Got error while initializing jaeger agent for cmd %s: %v", cmd, err)
+	}
+
+
 	switch cmd {
 	case "details":
-		srv = services.NewDetails(*detailsport)
+		srv = services.NewDetails(*detailsport, tracer)
 	case "ratings":
-		srv = services.NewRatings(*ratingsport)
+		srv = services.NewRatings(*ratingsport, tracer)
 	case "reviews":
 		srv = services.NewReviews(
 			*reviewsport,
 			*ratingsaddr,
+			tracer,
 		)
 	case "productpage":
 		srv = services.NewProductPage(
 			*productpageport,
 			*reviewsaddr,
 			*detailsaddr,
+			tracer,
 		)
 	default:
 		log.Fatalf("unknown cmd: %s", cmd)

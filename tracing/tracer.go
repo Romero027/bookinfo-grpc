@@ -2,8 +2,6 @@ package tracing
 
 import (
 	"time"
-	"os"
-	"strconv"
 	"log"
 
 	opentracing "github.com/opentracing/opentracing-go"
@@ -17,7 +15,7 @@ var (
 // Init returns a newly configured tracer
 func Init(serviceName, host string) (opentracing.Tracer, error) {
 	ratio := defaultSampleRatio
-	log.printf("jaeger at host %s: tracing sample ratio %f", host, ratio)
+	log.Printf("jaeger: tracing sample ratio %f", ratio)
 	cfg := config.Configuration{
 		Sampler: &config.SamplerConfig{
 			Type:  "probabilistic",

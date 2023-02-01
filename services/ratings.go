@@ -8,13 +8,18 @@ import (
 
 	"github.com/livingshade/bookinfo-grpc/proto/ratings"
 	"google.golang.org/grpc"
+
+	"github.com/opentracing/opentracing-go"
+	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+
 )
 
 // NewRatings returns a new server
-func NewRatings(port int) *Ratings {
+func NewRatings(port int, tracer opentracing.Tracer) *Ratings {
 	return &Ratings{
 		name: "ratings-server",
 		port: port,
+		Tracer: tracer,
 	}
 }
 
@@ -23,11 +28,19 @@ type Ratings struct {
 	name string
 	port int
 	ratings.RatingsServer
+	Tracer opentracing.Tracer
 }
 
 // Run starts the server
 func (s *Ratings) Run() error {
-	srv := grpc.NewServer()
+
+	opts := []grpc.ServerOption{
+		grpc.UnaryInterceptor(
+			otgrpc.OpenTracingServerInterceptor(s.Tracer),
+		),
+	}
+
+	srv := grpc.NewServer(opts...)
 	ratings.RegisterRatingsServer(srv, s)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.port))

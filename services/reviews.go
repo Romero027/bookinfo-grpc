@@ -10,14 +10,19 @@ import (
 	"github.com/livingshade/bookinfo-grpc/proto/ratings"
 	"github.com/livingshade/bookinfo-grpc/proto/reviews"
 	"google.golang.org/grpc"
+
+	"github.com/opentracing/opentracing-go"
+	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+
 )
 
 // NewReviews returns a new server
-func NewReviews(port int, ratingsaddr string) *Reviews {
+func NewReviews(port int, ratingsaddr string, tracer opentracing.Tracer) *Reviews {
 	return &Reviews{
 		name:          "reviews-server",
 		port:          port,
 		ratingsClient: ratings.NewRatingsClient(dial(ratingsaddr)),
+		Tracer: tracer,
 	}
 }
 
@@ -27,6 +32,7 @@ type Reviews struct {
 	port          int
 	ratingsClient ratings.RatingsClient
 	reviews.ReviewsServer
+	Tracer opentracing.Tracer
 }
 
 // Run starts the server
@@ -36,7 +42,13 @@ func (s *Reviews) Run() error {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	srv := grpc.NewServer()
+	opts := []grpc.ServerOption{
+		grpc.UnaryInterceptor(
+			otgrpc.OpenTracingServerInterceptor(s.Tracer),
+		),
+	}
+
+	srv := grpc.NewServer(opts...)
 	reviews.RegisterReviewsServer(srv, s)
 
 	version := os.Getenv("REVIEWS_VERSION")

@@ -11,6 +11,9 @@ import (
 	"github.com/livingshade/bookinfo-grpc/proto/details"
 	"github.com/livingshade/bookinfo-grpc/proto/reviews"
 	"google.golang.org/grpc"
+
+	//"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	"github.com/opentracing/opentracing-go"
 )
 
 func (s *ProductPage) initializeProucts() {
@@ -37,13 +40,15 @@ func dial(addr string) *grpc.ClientConn {
 	return conn
 }
 
+// todo use mux
 // NewProductPage returns a new server
-func NewProductPage(port int, reviewsddr string, detailsaddr string) *ProductPage {
+func NewProductPage(port int, reviewsddr string, detailsaddr string, tracer opentracing.Tracer) *ProductPage {
 	return &ProductPage{
 		port:          port,
 		detailsClient: details.NewDetailsClient(dial(detailsaddr)),
 		reviewsClient: reviews.NewReviewsClient(dial(reviewsddr)),
 		User:          "None",
+		Tracer: tracer,
 	}
 }
 
@@ -54,6 +59,7 @@ type ProductPage struct {
 	reviewsClient reviews.ReviewsClient
 	User          string
 	Products      []Product
+	Tracer opentracing.Tracer
 }
 
 // Product contains all information about a product

@@ -42,8 +42,7 @@ spec:
     io.kompose.service: jaeger
 status:
   loadBalancer: {}
-
-
+---
 # deployment
 apiVersion: apps/v1
 kind: Deployment
@@ -74,7 +73,7 @@ spec:
     spec:
       containers:
         - image: jaegertracing/all-in-one:latest
-          name: hotel-reserv-jaeger
+          name: bookinfo-jaeger
           ports:
             - containerPort: 14269
             - containerPort: 5778

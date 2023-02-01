@@ -28,7 +28,9 @@ sudo bash build-images.sh # you need to change the username and run docker login
 ## Run Bookinfo Applicaton
 
 ```bash
-kubectl apply -f kubernetes/bookinfo-grpc.yaml
+kubectl apply -f ./kubernetes/bookinfo-grpc.yaml
+kubectl apply -f ./kubernetes/jaeger.yaml
+kubectl get pods
 ```
 
 

@@ -61,6 +61,8 @@ OUTPUT=$(mktemp)
 export OUTPUT
 echo "Application cleanup may take up to one minute"
 kubectl delete -n ${NAMESPACE} -f "$SCRIPTDIR/bookinfo-grpc.yaml" > "${OUTPUT}" 2>&1
+
+kubectl delete -n ${NAMESPACE} -f "$SCRIPTDIR/jaeger.yaml" > "${OUTPUT}" 2>&1
 ret=$?
 function cleanup() {
   rm -f "${OUTPUT}"

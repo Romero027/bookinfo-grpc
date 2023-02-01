@@ -19,9 +19,11 @@ func main() {
 		detailsport     = flag.Int("detailsport", 8081, "details service port")
 		ratingsport     = flag.Int("ratingsport", 8082, "details service port")
 		reviewsport     = flag.Int("reviewsport", 8083, "details service port")
+		
 		detailsaddr     = flag.String("detailsaddr", "details:8081", "reviews service addr")
 		ratingsaddr     = flag.String("ratingsaddr", "ratings:8082", "ratings server addr")
 		reviewsaddr     = flag.String("reviewsaddr", "reviews:8083", "reviews service addr")
+		jaegeraddr 		= flag.String("jaegeraddr", "jaeger:6831", "jaeger tracing addr")
 		// detailsaddr     = flag.String("detailsaddr", ":8081", "reviews service addr")
 		// ratingsaddr     = flag.String("ratingsaddr", ":8082", "ratings server addr")
 		// reviewsaddr     = flag.String("reviewsaddr", ":8083", "reviews service addr")

@@ -35,7 +35,7 @@ func main() {
 
 	var srv server
 	var cmd = os.Args[1]
-	println(cmd)
+	println("cmd parsed: ", cmd)
 
 	tracer, err := tracing.Init(cmd, *jaegeraddr)
 	if err != nil {

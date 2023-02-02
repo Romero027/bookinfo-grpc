@@ -5,7 +5,9 @@ import (
 	"log"
 
 	opentracing "github.com/opentracing/opentracing-go"
-	"github.com/uber/jaeger-client-go/config"
+	jaegercfg "github.com/uber/jaeger-client-go/config"
+	jaegerlog "github.com/uber/jaeger-client-go/log"
+
 )
 
 var (
@@ -16,19 +18,19 @@ var (
 func Init(serviceName, host string) (opentracing.Tracer, error) {
 	ratio := defaultSampleRatio
 	log.Printf("jaeger: tracing sample ratio %f", ratio)
-	cfg := config.Configuration{
-		Sampler: &config.SamplerConfig{
+	cfg := jaegercfg.Configuration{
+		Sampler: &jaegercfg.SamplerConfig{
 			Type:  "probabilistic",
 			Param: ratio,
 		},
-		Reporter: &config.ReporterConfig{
+		Reporter: &jaegercfg.ReporterConfig{
 			LogSpans:            false,
 			BufferFlushInterval: 1 * time.Second,
 			LocalAgentHostPort:  host,
 		},
 	}
-
-	tracer, _, err := cfg.New(serviceName)
+	logger := jaegerlog.StdLogger
+	tracer, _, err := cfg.New(serviceName, jaegercfg.Logger(logger))
 	if err != nil {
 		return nil, err
 	}

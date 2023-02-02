@@ -21,7 +21,7 @@ func NewReviews(port int, ratingsaddr string, tracer opentracing.Tracer) *Review
 	return &Reviews{
 		name:          "reviews-server",
 		port:          port,
-		ratingsClient: ratings.NewRatingsClient(dial(ratingsaddr)),
+		ratingsClient: ratings.NewRatingsClient(dial(ratingsaddr, tracer)),
 		Tracer: tracer,
 	}
 }

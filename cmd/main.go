@@ -41,6 +41,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Got error while initializing jaeger agent for cmd %s: %v", cmd, err)
 	}
+	log.Printf("tracer inited for cmd %s", cmd)
 
 
 	switch cmd {

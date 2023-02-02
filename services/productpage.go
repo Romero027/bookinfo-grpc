@@ -12,7 +12,7 @@ import (
 	"github.com/livingshade/bookinfo-grpc/proto/reviews"
 	"google.golang.org/grpc"
 
-	//"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	"github.com/opentracing/opentracing-go"
 )
 
@@ -27,9 +27,10 @@ func (s *ProductPage) initializeProucts() {
 	}
 }
 
-func dial(addr string) *grpc.ClientConn {
+func dial(addr string, tracer opentracing.Tracer) *grpc.ClientConn {
 	opts := []grpc.DialOption{
 		grpc.WithInsecure(),
+		grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(tracer)),
 	}
 
 	conn, err := grpc.Dial(addr, opts...)
@@ -45,8 +46,8 @@ func dial(addr string) *grpc.ClientConn {
 func NewProductPage(port int, reviewsddr string, detailsaddr string, tracer opentracing.Tracer) *ProductPage {
 	return &ProductPage{
 		port:          port,
-		detailsClient: details.NewDetailsClient(dial(detailsaddr)),
-		reviewsClient: reviews.NewReviewsClient(dial(reviewsddr)),
+		detailsClient: details.NewDetailsClient(dial(detailsaddr, tracer)),
+		reviewsClient: reviews.NewReviewsClient(dial(reviewsddr, tracer)),
 		User:          "None",
 		Tracer: tracer,
 	}
@@ -58,7 +59,7 @@ type ProductPage struct {
 	detailsClient details.DetailsClient
 	reviewsClient reviews.ReviewsClient
 	User          string
-	Products      []Product
+	Products      []Product	
 	Tracer opentracing.Tracer
 }
 

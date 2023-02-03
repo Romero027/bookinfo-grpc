@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"time"
+//	"time"
 	"github.com/livingshade/bookinfo-grpc/proto/details"
 
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/grpc-ecosystem/go-grpc-middleware/ratelimit"
+//	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+//	"github.com/grpc-ecosystem/go-grpc-middleware/ratelimit"
 
-	"github.com/livingshade/bookinfo-grpc/middleware/ratelimiter"
+//	"github.com/livingshade/bookinfo-grpc/middleware/ratelimiter"
 
 	"google.golang.org/grpc"
 	"github.com/opentracing/opentracing-go"
@@ -40,17 +40,17 @@ type Details struct {
 // Run starts the server
 func (s *Details) Run() error {
 
-	conf := ratelimiter.NewRateConfig(10, time.Duration(60) * time.Second) 
+	//conf := ratelimiter.NewRateConfig(10, time.Duration(60) * time.Second) 
 	// one request per second
-	limiter := ratelimiter.NewFixedWindowRateLimiter(*conf)
+	//limiter := ratelimiter.NewFixedWindowRateLimiter(*conf)
 	
 	opts := []grpc.ServerOption{
-		grpc_middleware.WithUnaryServerChain(
-			ratelimit.UnaryServerInterceptor(limiter),
-		),
-		grpc_middleware.WithStreamServerChain(
-			ratelimit.StreamServerInterceptor(limiter),
-		),
+		// grpc_middleware.WithUnaryServerChain(
+		// 	ratelimit.UnaryServerInterceptor(limiter),
+		// ),
+		// grpc_middleware.WithStreamServerChain(
+		// 	ratelimit.StreamServerInterceptor(limiter),
+		// ),
 		grpc.UnaryInterceptor(
 			otgrpc.OpenTracingServerInterceptor(s.Tracer),
 		),

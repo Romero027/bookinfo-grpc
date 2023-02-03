@@ -10,6 +10,8 @@ import (
 
 	"github.com/livingshade/bookinfo-grpc/proto/details"
 	"github.com/livingshade/bookinfo-grpc/proto/reviews"
+	"github.com/livingshade/bookinfo-grpc/tracing"
+
 	"google.golang.org/grpc"
 
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
@@ -80,12 +82,12 @@ func (s *ProductPage) Run() error {
 
 	mux.Handle("/", http.FileServer(http.Dir("static")))
 	mux.Handle("/index", http.FileServer(http.Dir("static")))
-	mux.HandleFunc("/login", http.HandlerFunc(s.loginHandler))
-	mux.HandleFunc("/logout", http.HandlerFunc(s.logoutHandler))
-	mux.HandleFunc("/productpage", http.HandlerFunc(s.productpageHandler))
-	mux.HandleFunc("/products", http.HandlerFunc(s.productsHandler))
-	mux.HandleFunc("/reviews", http.HandlerFunc(s.reviewsHandler))
-	mux.HandleFunc("/details", http.HandlerFunc(s.detailsHandler))
+	mux.Handle("/login", http.HandlerFunc(s.loginHandler))
+	mux.Handle("/logout", http.HandlerFunc(s.logoutHandler))
+	mux.Handle("/productpage", http.HandlerFunc(s.productpageHandler))
+	mux.Handle("/products", http.HandlerFunc(s.productsHandler))
+	mux.Handle("/reviews", http.HandlerFunc(s.reviewsHandler))
+	mux.Handle("/details", http.HandlerFunc(s.detailsHandler))
 
 	log.Printf("ProductPage server running at port: %d", s.port)
 	s.initializeProucts()

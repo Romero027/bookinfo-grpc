@@ -33,6 +33,13 @@ kubectl get pods
 ./istio-1.14.1/wrk/wrk -t1 -c1 -d 10s http://10.96.88.88:8080 -L -s ./scripts/lua/bookinfo.lua
 ```
 
+## view Jaeger traces
+
+Use `kubectl get ep | grep jaeger` to get the location of jaeger service.
+
+View Jaeger traces by accessing:
+- `http://<jaeger-ip-address>:<jaeger-port>`  
+
 ### Cleanup
 
 ```bash

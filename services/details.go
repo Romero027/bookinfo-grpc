@@ -6,12 +6,12 @@ import (
 	"log"
 	"net"
 //	"time"
-	"github.com/livingshade/bookinfo-grpc/proto/details"
+	"github.com/Romero027/bookinfo-grpc/proto/details"
 
 //	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 //	"github.com/grpc-ecosystem/go-grpc-middleware/ratelimit"
 
-//	"github.com/livingshade/bookinfo-grpc/middleware/ratelimiter"
+//	"github.com/Romero027/bookinfo-grpc/middleware/ratelimiter"
 
 	"google.golang.org/grpc"
 	"github.com/opentracing/opentracing-go"

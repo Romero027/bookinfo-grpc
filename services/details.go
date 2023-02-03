@@ -66,7 +66,7 @@ func (s *Details) Run() error {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-
+	log.Printf("Details before")
 	log.Printf("Details server running at port: %d", s.port)
 	return srv.Serve(lis)
 }

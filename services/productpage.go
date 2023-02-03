@@ -75,14 +75,17 @@ type Product struct {
 
 // Run the server
 func (s *ProductPage) Run() error {
-	http.Handle("/", http.FileServer(http.Dir("static")))
-	http.Handle("/index", http.FileServer(http.Dir("static")))
-	http.HandleFunc("/login", s.loginHandler)
-	http.HandleFunc("/logout", s.logoutHandler)
-	http.HandleFunc("/productpage", s.productpageHandler)
-	http.HandleFunc("/products", s.productsHandler)
-	http.HandleFunc("/reviews", s.reviewsHandler)
-	http.HandleFunc("/details", s.detailsHandler)
+
+	mux := tracing.NewServeMux(s.Tracer)
+
+	mux.Handle("/", http.FileServer(http.Dir("static")))
+	mux.Handle("/index", http.FileServer(http.Dir("static")))
+	mux.HandleFunc("/login", http.HandlerFunc(s.loginHandler))
+	mux.HandleFunc("/logout", http.HandlerFunc(s.logoutHandler))
+	mux.HandleFunc("/productpage", http.HandlerFunc(s.productpageHandler))
+	mux.HandleFunc("/products", http.HandlerFunc(s.productsHandler))
+	mux.HandleFunc("/reviews", http.HandlerFunc(s.reviewsHandler))
+	mux.HandleFunc("/details", http.HandlerFunc(s.detailsHandler))
 
 	log.Printf("ProductPage server running at port: %d", s.port)
 	s.initializeProucts()

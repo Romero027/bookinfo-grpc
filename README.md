@@ -10,14 +10,7 @@ See <https://istio.io/docs/examples/bookinfo/>.
 
 ## Installation
 
-You can use `. ./scripts/k8s_setup.sh` and `. ./install.sh` to install/build kubernetes, istio, and wrk/wrk2.
-
-## Add golang dependencies
-
-```bash
-go get github.com/grpc-ecosystem/go-grpc-middleware
-go get github.com/grpc-ecosystem/go-grpc-middleware/ratelimit
-```
+You can use `. ./scripts/k8s_setup.sh` and `. ./install.sh` to install/build kubernetes, istio, and wrk/wrk2, change `config.sh` if needed.
 
 ## Build docker images and push them to docker hub
 

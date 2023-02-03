@@ -47,7 +47,7 @@ spec:
         image: livingshade/bookinfo_grpc_details:latest
         command: ["/go/bin/cmd"]
         args: ["details"]
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8081
 ---
@@ -100,7 +100,7 @@ spec:
         image: livingshade/bookinfo_grpc_ratings:latest
         command: ["/go/bin/cmd"]
         args: ["ratings"]
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8082
 ---
@@ -154,7 +154,7 @@ spec:
         image: livingshade/bookinfo_grpc_reviews:latest
         command: ["/go/bin/cmd"]
         args: ["reviews"]
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: REVIEWS_VERSION
           value: "v1"
@@ -186,7 +186,7 @@ spec:
         image: livingshade/bookinfo_grpc_reviews:latest
         command: ["/go/bin/cmd"]
         args: ["reviews"]
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: REVIEWS_VERSION
           value: "v2"
@@ -218,7 +218,7 @@ spec:
         image: livingshade/bookinfo_grpc_reviews:latest
         command: ["/go/bin/cmd"]
         args: ["reviews"]
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: REVIEWS_VERSION
           value: "v3"
@@ -275,7 +275,7 @@ spec:
         image: livingshade/bookinfo_grpc_productpage
         command: ["/go/bin/cmd"]
         args: ["productpage"]
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
 ---

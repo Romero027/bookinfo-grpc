@@ -7,8 +7,8 @@ import (
 	"net"
 	"os"
 
-	"github.com/Romero027/bookinfo-grpc/proto/ratings"
-	"github.com/Romero027/bookinfo-grpc/proto/reviews"
+	"github.com/livingshade/bookinfo-grpc/proto/ratings"
+	"github.com/livingshade/bookinfo-grpc/proto/reviews"
 	"google.golang.org/grpc"
 
 	"github.com/opentracing/opentracing-go"

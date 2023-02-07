@@ -44,7 +44,7 @@ spec:
       serviceAccountName: bookinfo-details
       containers:
       - name: details
-        image: xzhu0027/bookinfo_grpc_details:latest
+        image: livingshade/bookinfo_grpc_details:latest
         command: ["/go/bin/cmd"]
         args: ["details"]
         imagePullPolicy: Always
@@ -97,7 +97,7 @@ spec:
       serviceAccountName: bookinfo-ratings
       containers:
       - name: ratings
-        image: xzhu0027/bookinfo_grpc_ratings:latest
+        image: livingshade/bookinfo_grpc_ratings:latest
         command: ["/go/bin/cmd"]
         args: ["ratings"]
         imagePullPolicy: Always
@@ -151,7 +151,7 @@ spec:
       serviceAccountName: bookinfo-reviews
       containers:
       - name: reviews
-        image: xzhu0027/bookinfo_grpc_reviews:latest
+        image: livingshade/bookinfo_grpc_reviews:latest
         command: ["/go/bin/cmd"]
         args: ["reviews"]
         imagePullPolicy: Always
@@ -183,7 +183,7 @@ spec:
       serviceAccountName: bookinfo-reviews
       containers:
       - name: reviews
-        image: xzhu0027/bookinfo_grpc_reviews:latest
+        image: livingshade/bookinfo_grpc_reviews:latest
         command: ["/go/bin/cmd"]
         args: ["reviews"]
         imagePullPolicy: Always
@@ -215,7 +215,7 @@ spec:
       serviceAccountName: bookinfo-reviews
       containers:
       - name: reviews
-        image: xzhu0027/bookinfo_grpc_reviews:latest
+        image: livingshade/bookinfo_grpc_reviews:latest
         command: ["/go/bin/cmd"]
         args: ["reviews"]
         imagePullPolicy: Always
@@ -272,7 +272,7 @@ spec:
       serviceAccountName: bookinfo-productpage
       containers:
       - name: productpage
-        image: xzhu0027/bookinfo_grpc_productpage
+        image: livingshade/bookinfo_grpc_productpage
         command: ["/go/bin/cmd"]
         args: ["productpage"]
         imagePullPolicy: Always

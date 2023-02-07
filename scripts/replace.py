@@ -8,10 +8,10 @@ Similarly, it will replace $go_old by $go_new in all `*.go` files and `Dockfile`
 import sys
 import os
 
-docker_old = "livingshade"
-docker_new = "xzhu0027"
-go_old = "livingshade"
-go_new = "Romero027"
+docker_old = "xzhu0027"
+docker_new = "livingshade"
+go_old = "Romero027"
+go_new = "livingshade"
 
 def replace(path, old, new):
     with open(path, "r") as f:
@@ -24,7 +24,7 @@ for root, dirs, files in os.walk(".", topdown=False):
     for file in files: 
         path = str(root + "/" + file)
         name = file.split('.')
-        if name == "Dockerfile":
+        if file == "Dockerfile":
             replace(path, go_old, go_new)
         elif len(name) == 2:
             if name[1] == "go" or name[1] == "yaml":

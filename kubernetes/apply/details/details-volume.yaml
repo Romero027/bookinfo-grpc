@@ -1,0 +1,27 @@
+# volume and persistent volume claim of `details`
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: details-pv
+spec:
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  storageClassName: details-storage
+  hostPath:
+    path: /data/volumes/details-pv   # Where all the hard drives are mounted
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: details-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: details-storage
+  resources:
+    requests:
+      storage: 1Gi

@@ -1,0 +1,27 @@
+# volume and persistent volume claim of `ratings`
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ratings-pv
+spec:
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  storageClassName: ratings-storage
+  hostPath:
+    path: /data/volumes/ratings-pv   # Where all the hard drives are mounted
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ratings-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ratings-storage
+  resources:
+    requests:
+      storage: 1Gi

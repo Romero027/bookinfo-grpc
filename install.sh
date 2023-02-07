@@ -55,6 +55,8 @@ kubectl label namespace default istio-injection=enabled --overwrite
 sudo apt-get install luarocks -y
 sudo luarocks install luasocket
 
+cd $BOOKINFO_DIR
+
 git clone https://github.com/wg/wrk.git
 cd wrk
 make -j $(nproc)

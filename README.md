@@ -30,7 +30,7 @@ kubectl get pods
 ## Run load generator
 
 ```bash
-./istio-1.14.1/wrk/wrk -t1 -c1 -d 10s http://10.96.88.88:8080 -L -s ./scripts/lua/bookinfo.lua
+./wrk/wrk -t1 -c1 -d 10s http://10.96.88.88:8080 -L -s ./scripts/lua/bookinfo.lua
 ```
 
 ## view Jaeger traces

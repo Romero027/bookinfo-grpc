@@ -31,7 +31,7 @@ echo \
 
 
 sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io=1.6.12-1 -y --allow-downgrades
+sudo apt-get install docker-ce docker-ce-cli containerd -y
 
 sudo mkdir -p /etc/docker
 sudo mkdir -p ${DOCKER_DATA_ROOT}

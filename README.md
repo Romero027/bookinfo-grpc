@@ -10,7 +10,7 @@ See <https://istio.io/docs/examples/bookinfo/>.
 
 ## Installation
 
-You can use `. ./scripts/k8s_setup.sh` and `. ./install.sh` to install/build kubernetes, istio, and wrk/wrk2.
+You can use `. ./scripts/k8s_setup.sh` and `. ./install.sh` to install/build kubernetes, istio, and wrk/wrk2, change `config.sh` if needed.
 
 ## Build docker images and push them to docker hub
 
@@ -21,7 +21,9 @@ sudo bash build-images.sh # you need to change the username and run docker login
 ## Run Bookinfo Applicaton
 
 ```bash
-k apply -f kubernetes/bookinfo-grpc.yaml
+kubectl apply -f ./kubernetes/bookinfo-grpc.yaml
+kubectl apply -f ./kubernetes/jaeger.yaml
+kubectl get pods
 ```
 
 
@@ -31,10 +33,17 @@ k apply -f kubernetes/bookinfo-grpc.yaml
 ./wrk/wrk -t1 -c1 -d 10s http://10.96.88.88:8080 -L -s ./scripts/lua/bookinfo.lua
 ```
 
+## view Jaeger traces
+
+Use `kubectl get ep | grep jaeger` to get the location of jaeger service.
+
+View Jaeger traces by accessing:
+- `http://<jaeger-ip-address>:<jaeger-port>`  
+
 ### Cleanup
 
 ```bash
-bash ./scripts/cleanup.sh
+bash ./kubernetes/cleanup.sh
 ```
 
 ## Development

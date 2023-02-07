@@ -1,0 +1,95 @@
+# service
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: jaeger
+  name: jaeger
+spec:
+  ports:
+    - name: "14269"
+      port: 14269
+      targetPort: 14269
+    - name: "5778"
+      port: 5778
+      targetPort: 5778
+    - name: "14268"
+      port: 14268
+      targetPort: 14268
+    - name: "14267"
+      port: 14267
+      targetPort: 14267
+    - name: "16686"
+      port: 16686
+      targetPort: 16686
+    - name: "5775"
+      port: 5775
+      protocol: UDP
+      targetPort: 5775
+    - name: "6831"
+      port: 6831
+      protocol: UDP
+      targetPort: 6831
+    - name: "6832"
+      port: 6832
+      protocol: UDP
+      targetPort: 6832
+  selector:
+    io.kompose.service: jaeger
+status:
+  loadBalancer: {}
+---
+# deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: jaeger
+  name: jaeger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: jaeger
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+        sidecar.istio.io/statsInclusionPrefixes: cluster.outbound,cluster_manager,listener_manager,http_mixer_filter,tcp_mixer_filter,server,cluster.xds-grp,listener,connection_manager
+        sidecar.istio.io/statsInclusionRegexps: http.*
+      creationTimestamp: null
+      labels:
+        io.kompose.service: jaeger
+    spec:
+      containers:
+        - image: jaegertracing/all-in-one:latest
+          name: bookinfo-jaeger
+          ports:
+            - containerPort: 14269
+            - containerPort: 5778
+            - containerPort: 14268
+            - containerPort: 14267
+            - containerPort: 16686
+            - containerPort: 5775
+              protocol: UDP
+            - containerPort: 6831
+              protocol: UDP
+            - containerPort: 6832
+              protocol: UDP
+          resources:
+            requests:
+              cpu: 100m
+            limits:
+              cpu: 1000m
+      restartPolicy: Always
+status: {}

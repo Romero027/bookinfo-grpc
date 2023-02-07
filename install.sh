@@ -13,7 +13,7 @@ sudo apt-get install -y sysstat
 
 # Python Dependencies
 sudo apt install -y python3-pip
-pip3 install -r requirements.txt
+# pip3 install -r requirements.txt
 
 # Install BCC (Ubuntu 20.04)
 cd $BOOKINFO_DIR
@@ -54,6 +54,8 @@ kubectl label namespace default istio-injection=enabled --overwrite
 # Install wrk and wrk2
 sudo apt-get install luarocks -y
 sudo luarocks install luasocket
+
+cd $BOOKINFO_DIR
 
 git clone https://github.com/wg/wrk.git
 cd wrk

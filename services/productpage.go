@@ -11,6 +11,9 @@ import (
 	"github.com/Romero027/bookinfo-grpc/proto/details"
 	"github.com/Romero027/bookinfo-grpc/proto/reviews"
 	"google.golang.org/grpc"
+
+	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	"github.com/opentracing/opentracing-go"
 )
 
 func (s *ProductPage) initializeProucts() {
@@ -24,9 +27,10 @@ func (s *ProductPage) initializeProucts() {
 	}
 }
 
-func dial(addr string) *grpc.ClientConn {
+func dial(addr string, tracer opentracing.Tracer) *grpc.ClientConn {
 	opts := []grpc.DialOption{
 		grpc.WithInsecure(),
+		grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(tracer)),
 	}
 
 	conn, err := grpc.Dial(addr, opts...)
@@ -37,13 +41,15 @@ func dial(addr string) *grpc.ClientConn {
 	return conn
 }
 
+// todo use mux
 // NewProductPage returns a new server
-func NewProductPage(port int, reviewsddr string, detailsaddr string) *ProductPage {
+func NewProductPage(port int, reviewsddr string, detailsaddr string, tracer opentracing.Tracer) *ProductPage {
 	return &ProductPage{
 		port:          port,
-		detailsClient: details.NewDetailsClient(dial(detailsaddr)),
-		reviewsClient: reviews.NewReviewsClient(dial(reviewsddr)),
+		detailsClient: details.NewDetailsClient(dial(detailsaddr, tracer)),
+		reviewsClient: reviews.NewReviewsClient(dial(reviewsddr, tracer)),
 		User:          "None",
+		Tracer: tracer,
 	}
 }
 
@@ -53,7 +59,8 @@ type ProductPage struct {
 	detailsClient details.DetailsClient
 	reviewsClient reviews.ReviewsClient
 	User          string
-	Products      []Product
+	Products      []Product	
+	Tracer opentracing.Tracer
 }
 
 // Product contains all information about a product
@@ -68,6 +75,18 @@ type Product struct {
 
 // Run the server
 func (s *ProductPage) Run() error {
+
+	// mux := tracing.NewServeMux(s.Tracer)
+
+	// mux.Handle("/", http.FileServer(http.Dir("static")))
+	// mux.Handle("/index", http.FileServer(http.Dir("static")))
+	// mux.HandleFunc("/login", http.HandlerFunc(s.loginHandler))
+	// mux.HandleFunc("/logout", http.HandlerFunc(s.logoutHandler))
+	// mux.HandleFunc("/productpage", http.HandlerFunc(s.productpageHandler))
+	// mux.HandleFunc("/products", http.HandlerFunc(s.productsHandler))
+	// mux.HandleFunc("/reviews", http.HandlerFunc(s.reviewsHandler))
+	// mux.HandleFunc("/details", http.HandlerFunc(s.detailsHandler))
+	
 	http.Handle("/", http.FileServer(http.Dir("static")))
 	http.Handle("/index", http.FileServer(http.Dir("static")))
 	http.HandleFunc("/login", s.loginHandler)
@@ -76,7 +95,7 @@ func (s *ProductPage) Run() error {
 	http.HandleFunc("/products", s.productsHandler)
 	http.HandleFunc("/reviews", s.reviewsHandler)
 	http.HandleFunc("/details", s.detailsHandler)
-
+	
 	log.Printf("ProductPage server running at port: %d", s.port)
 	s.initializeProucts()
 	return http.ListenAndServe(fmt.Sprintf(":%d", s.port), nil)

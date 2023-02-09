@@ -5,6 +5,7 @@
         "Year": 1596,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 206,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -15,6 +16,7 @@
         "Year": 1597,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 224,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -25,6 +27,7 @@
         "Year": 1598,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 187,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -35,6 +38,7 @@
         "Year": 1599,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 231,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -45,6 +49,7 @@
         "Year": 1600,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 266,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -55,6 +60,7 @@
         "Year": 1601,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 286,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -65,6 +71,7 @@
         "Year": 1602,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 200,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -75,6 +82,7 @@
         "Year": 1603,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 219,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -85,6 +93,7 @@
         "Year": 1604,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 239,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -95,6 +104,7 @@
         "Year": 1605,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 143,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -105,6 +115,7 @@
         "Year": 1606,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 109,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -115,6 +126,7 @@
         "Year": 1607,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 256,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -125,6 +137,7 @@
         "Year": 1608,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 279,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -135,6 +148,7 @@
         "Year": 1609,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 273,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -145,6 +159,7 @@
         "Year": 1610,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 108,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -155,6 +170,7 @@
         "Year": 1611,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 194,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -165,6 +181,7 @@
         "Year": 1612,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 190,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -175,6 +192,7 @@
         "Year": 1613,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 157,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -185,6 +203,7 @@
         "Year": 1614,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 176,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"
@@ -195,6 +214,7 @@
         "Year": 1615,
         "Type": "paperback",
         "Publisher": "PublisherA",
+        "Pages": 252,
         "Language": "English",
         "ISBN10": "1234567890",
         "ISBN13": "123-1234567890"

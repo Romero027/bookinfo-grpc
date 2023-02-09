@@ -19,6 +19,7 @@ type DB_Detail struct {
 	Author    string `bson:"author,omitempty"`
 	Year      int32  `bson:"year,omitempty"`
 	Type      string `bson:"type,omitempty"`
+	Pages	  int32  `bson:"pages,omitempty"`
 	Publisher string `bson:"publisher,omitempty"`
 	Language  string `bson:"language,omitempty"`
 	ISBN10    string `bson:"ISBN10,omitempty"`

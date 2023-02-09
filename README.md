@@ -15,14 +15,14 @@ You can use `. ./scripts/k8s_setup.sh` and `. ./install.sh` to install/build kub
 ## Build docker images and push them to docker hub
 
 ```bash
+python3 ./scripts/data_gen.py # generate data in ./data, optional
 sudo bash build-images.sh # you need to change the username and run docker login
 ```
 
 ## Run Bookinfo Applicaton
 
 ```bash
-kubectl apply -f ./kubernetes/bookinfo-grpc.yaml
-kubectl apply -f ./kubernetes/jaeger.yaml
+kubectl apply -Rf ./kubernetes/apply
 kubectl get pods
 ```
 

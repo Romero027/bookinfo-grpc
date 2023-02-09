@@ -24,6 +24,7 @@ def gen_detail(n, fd):
             "Year": 1596 + i,
             "Type": "paperback",
             "Publisher" : "PublisherA",
+            "Pages": random.randint(100, 300),
             "Language":  "English",
             "ISBN10":    "1234567890",
             "ISBN13":    "123-1234567890",

@@ -19,7 +19,7 @@ def gen_detail(n, fd):
     details = []
     for i in range(n):
         detail = {
-            "ProductId": i + 1,
+            "ProductID": i,
             "Author": "William Shakespeare",
             "Year": 1596 + i,
             "Type": "paperback",
@@ -44,7 +44,7 @@ def gen_review(n, fd):
     # 3 review for 1 product
     for i in range(n * 3):
         review = {
-            "ProductId": i // 3 + 1,
+            "ProductID": i // 3,
   		    "Reviewer":  "reviewer" + str(i + 1),
             "Text": "Absolutely fun and entertaining. The play lacks thematic depth when compared to other plays by Shakespeare."
         }
@@ -56,16 +56,28 @@ def gen_rating(n, fd):
     ratings = []
     for i in range(n):
         ratings.append({
-            "ProductId": i + 1,
+            "ProductID": i,
             "Ratings": random.randint(1, 10)
         })
     json.dump(ratings, fd, indent=4)
     
+# ID:    0,
+# 	Title: "The Comedy of Errors",
+def gen_product(n, fd):
+    products = []
+    for i in range(n):
+        products.append({
+            "ProductID": i,
+            "Title": "Book no.{}".format(i)
+        })
+    json.dump(products, fd, indent=4)
+
+
 if __name__ == "__main__":
     n = 20
     print("generating data with n = {}".format(n))
     os.system("mkdir -p ./data")
-    for i in ["details", "reviews", "ratings"]:
+    for i in ["details", "reviews", "ratings", "products"]:
         fullpath = "./data/{}.json".format(i)
         with open(fullpath, "w") as f:
             if i == "details":
@@ -74,4 +86,6 @@ if __name__ == "__main__":
                 gen_review(n, f)
             elif i == "ratings":
                 gen_rating(n, f)
+            elif i == "products":
+                gen_product(n, f)
     print("done")

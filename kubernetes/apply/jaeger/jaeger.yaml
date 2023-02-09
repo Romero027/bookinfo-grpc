@@ -93,3 +93,4 @@ spec:
               cpu: 1000m
       restartPolicy: Always
 status: {}
+---

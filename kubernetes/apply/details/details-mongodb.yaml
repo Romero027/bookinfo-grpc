@@ -67,3 +67,4 @@ spec:
           persistentVolumeClaim:
             claimName: details-pvc
 status: {}
+---

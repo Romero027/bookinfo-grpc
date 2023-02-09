@@ -76,22 +76,20 @@ func (s *Details) Run() error {
 }
 
 // GetDetails returns the details of a product
-// TODO: Add a persistent storage or use online information
 func (s *Details) GetDetails(ctx context.Context, req *details.Product) (*details.Result, error) {
 	res := new(details.Result)
 	id := req.GetId()
-	log.Printf("Recevied request id = %v", id)
+	
 	session := s.MongoSession.Copy()
 	defer session.Close()
 	c := session.DB("details-db").C("details")
 
 	var result DB_Detail;
-	err := c.Find(&bson.M{"ProductID": id}).One(&result)
-
+	err := c.Find(&bson.M{"ProductID": int(id)}).One(&result)
 	if err != nil {
-		log.Fatalf("Try to find product id [%v], err = ", id, err.Error())
+		log.Fatalf("Try to find product id [%v], err = %v", id, err.Error())
 	}
-	log.Prinf("Got %v", result)
+
 	detail1 := details.Detail{
 		ProductID: req.GetId(),
 		Author:    result.Author,

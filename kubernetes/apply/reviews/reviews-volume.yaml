@@ -6,7 +6,7 @@ metadata:
 spec:
   volumeMode: Filesystem
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   capacity:
     storage: 1Gi
   storageClassName: reviews-storage
@@ -20,8 +20,9 @@ metadata:
   name: reviews-pvc
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   storageClassName: reviews-storage
   resources:
     requests:
       storage: 1Gi
+---

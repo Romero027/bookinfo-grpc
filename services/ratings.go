@@ -13,6 +13,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 
 )
 
@@ -57,9 +58,23 @@ func (s *Ratings) Run() error {
 }
 
 // GetRatings returns the rating of a product from 1 to 5 stars (currently always return 5)
-// TODO: Add a persistent storage
 func (s *Ratings) GetRatings(ctx context.Context, req *ratings.Product) (*ratings.Result, error) {
 	res := new(ratings.Result)
-	res.Ratings = 5
+	id := req.GetId()
+
+
+	session := s.MongoSession.Copy()
+	defer session.Close()
+	c := session.DB("ratings-db").C("ratings")
+
+	var result DB_Rating;
+	err := c.Find(&bson.M{"ProductID": int(id)}).One(&result)
+	if err != nil {
+		log.Fatalf("Try to find product id [%v], err = %v", id, err.Error())
+	}
+	log.Printf("Got rating %v, id = %v", result, id)
+
+
+	res.Ratings = result.Ratings
 	return res, nil
 }

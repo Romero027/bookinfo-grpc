@@ -8,33 +8,33 @@ import (
 	"io/ioutil"
 
 	"gopkg.in/mgo.v2"
-//	"gopkg.in/mgo.v2/bson"
+	"gopkg.in/mgo.v2/bson"
 	// mgo.v2 is no longer maintained
 )
 
 // TODO avoid copy from protobuf
 // maybe there is better way like modify the protobuf file
 type DB_Detail struct {
-	ProductID int32  `bson:"ProductID,omitempty"`
-	Author    string `bson:"author,omitempty"`
-	Year      int32  `bson:"year,omitempty"`
-	Type      string `bson:"type,omitempty"`
-	Pages	  int32  `bson:"pages,omitempty"`
-	Publisher string `bson:"publisher,omitempty"`
-	Language  string `bson:"language,omitempty"`
-	ISBN10    string `bson:"ISBN10,omitempty"`
-	ISBN13    string `bson:"ISBN13,omitempty"`
+	ProductID int32  `bson:"ProductID"`
+	Author    string `bson:"author"`
+	Year      int32  `bson:"year"`
+	Type      string `bson:"type"`
+	Pages	  int32  `bson:"pages"`
+	Publisher string `bson:"publisher"`
+	Language  string `bson:"language"`
+	ISBN10    string `bson:"ISBN10"`
+	ISBN13    string `bson:"ISBN13"`
 }
 
 type DB_Review struct {
-	ProductID int32  `bson:"ProductID,omitempty"`
-	Reviewer string `bson:"reviewer,omitempty"`
-	Text string `bson:"text,omitempty"`
+	ProductID int32  `bson:"ProductID"`
+	Reviewer string `bson:"reviewer"`
+	Text string `bson:"text"`
 }
 
 type DB_Rating struct {
-	ProductID int32  `bson:"ProductID,omitempty"`
-	Ratings int32 `bson:"ratings,omitempty"`
+	ProductID int32  `bson:"ProductID"`
+	Ratings int32 `bson:"ratings"`
 
 }
 
@@ -54,34 +54,40 @@ func initializeDatabase(url string, service_name string) *mgo.Session {
 	}
 	
 	c := session.DB(db_name).C(service_name)
-	log.Printf("mongodb session for [%s] successfull...", service_name)
+	log.Printf("mongodb session for [%s] created", service_name)
 
 	switch service_name {
 	case "details":
 		initializeDetailsDB(c, file_name)
-	case "reviews":
-		initializeReviewsDB(c, file_name)
+	case "reviews": {
+		version := os.Getenv("REVIEWS_VERSION")
+		// only init once
+		if version == "v1" {
+			initializeReviewsDB(c, file_name)
+		}
+	}
 	case "ratings":
 		initializeRatingsDB(c, file_name)
 	default:
 		log.Fatalf("invalid service name %s", service_name)
 	}
 
-	err = c.EnsureIndexKey("ProductId")
+	err = c.EnsureIndexKey("ProductID")
 	if err != nil {
 		log.Fatal("Error on ensure index, err = %v", err)
 	}
 
+	log.Printf("Finish constructing db:%v coll:%v", db_name, service_name)
 	return session
 }
 
 
 func initializeDetailsDB(c *mgo.Collection, data_file string) {
 
-	log.Printf("Reading config...")
+	log.Printf("Reading db init data")
 	jsonFile, err := os.Open(data_file)
 	if err != nil {
-		log.Fatalf("Got error while reading config: %v", err)
+		log.Fatalf("Got error while reading data: %v", err)
 	}
 
 	defer jsonFile.Close()
@@ -90,22 +96,28 @@ func initializeDetailsDB(c *mgo.Collection, data_file string) {
 	var result []DB_Detail
 	json.Unmarshal([]byte(byteValue), &result)
 	for _, item := range result {
-		log.Printf("inserting item %v", item)
-		err = c.Insert(&item)
+		count, err := c.Find(&bson.M{"ProductID": item.ProductID}).Count()
 		if err != nil {
-			log.Fatalf("Error on inserting %v, error = %v", item, err)
-		}
+			log.Fatalf("Error on find item %v, error = %v", item, err)
+		} else if count == 0 {
+			err = c.Insert(&item)
+			if err != nil {
+				log.Fatalf("Error on inserting %v, error = %v", item, err)
+			}
+		} else if count != 1 {
+			log.Fatalf("Error on count %v, error = %v", item, err)
+		} 
 	}
-	log.Printf("Details db init finish!")
+	log.Printf("Details db load finish!")
 
 }
 
 func initializeRatingsDB(c *mgo.Collection, data_file string) {
 
-	log.Printf("Reading config...")
+	log.Printf("Reading db init data")
 	jsonFile, err := os.Open(data_file)
 	if err != nil {
-		log.Fatalf("Got error while reading config: %v", err)
+		log.Fatalf("Got error while reading data: %v", err)
 	}
 
 	defer jsonFile.Close()
@@ -114,19 +126,28 @@ func initializeRatingsDB(c *mgo.Collection, data_file string) {
 	var result []DB_Rating
 	json.Unmarshal([]byte(byteValue), &result)
 	for _, item := range result {
-		log.Printf("inserting item %v", item)
-		c.Insert(&item)
+		count, err := c.Find(&bson.M{"ProductID": item.ProductID}).Count()
+		if err != nil {
+			log.Fatalf("Error on find item %v, error = %v", item, err)
+		} else if count == 0 {
+			err = c.Insert(&item)
+			if err != nil {
+				log.Fatalf("Error on inserting %v, error = %v", item, err)
+			}
+		} else if count != 1 {
+			log.Fatalf("Error on count %v, error = %v", item, err)
+		} 
 	}
-	log.Printf("Details db init finish!")
+	log.Printf("Ratings db load finish!")
 
 }
 
 func initializeReviewsDB(c *mgo.Collection, data_file string) {
 
-	log.Printf("Reading config...")
+	log.Printf("Reading db init data")
 	jsonFile, err := os.Open(data_file)
 	if err != nil {
-		log.Fatalf("Got error while reading config: %v", err)
+		log.Fatalf("Got error while reading data: %v", err)
 	}
 
 	defer jsonFile.Close()
@@ -135,15 +156,23 @@ func initializeReviewsDB(c *mgo.Collection, data_file string) {
 	var result []DB_Review
 	json.Unmarshal([]byte(byteValue), &result)
 	for _, item := range result {
-		log.Printf("inserting item %v", item)
-		c.Insert(&item)
+		count, err := c.Find(&bson.M{"ProductID": item.ProductID}).Count()
+		if err != nil && count == 0 {
+			err = c.Insert(&item)
+			if err != nil {
+				log.Fatalf("Error on inserting %v, error = %v", item, err)
+			}
+		} else if count != 1 {
+			log.Fatalf("Error on count %v, error = %v", item, err)
+		}
 	}
-	log.Printf("Details db init finish!")
+	log.Printf("Reviews db load finish!")
 
 }
 
 func initializeProductpageDB(c *mgo.Collection, data_file string) {
 	panic("unreachable!")
+	// This is done in initializeProducts
 	// nothing to do
 	return
 }

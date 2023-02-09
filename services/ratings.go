@@ -12,14 +12,17 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 
+	"gopkg.in/mgo.v2"
+
 )
 
 // NewRatings returns a new server
-func NewRatings(port int, tracer opentracing.Tracer) *Ratings {
+func NewRatings(port int, tracer opentracing.Tracer, db_url string) *Ratings {
 	return &Ratings{
 		name: "ratings-server",
 		port: port,
 		Tracer: tracer,
+		MongoSession: initializeDatabase(db_url, "ratings"),
 	}
 }
 
@@ -29,6 +32,7 @@ type Ratings struct {
 	port int
 	ratings.RatingsServer
 	Tracer opentracing.Tracer
+	MongoSession *mgo.Session
 }
 
 // Run starts the server

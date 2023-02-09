@@ -14,6 +14,9 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	"github.com/opentracing/opentracing-go"
+
+	"gopkg.in/mgo.v2"
+
 )
 
 func (s *ProductPage) initializeProucts() {
@@ -50,6 +53,7 @@ func NewProductPage(port int, reviewsddr string, detailsaddr string, tracer open
 		reviewsClient: reviews.NewReviewsClient(dial(reviewsddr, tracer)),
 		User:          "None",
 		Tracer: tracer,
+		MongoSession: nil,
 	}
 }
 
@@ -61,6 +65,7 @@ type ProductPage struct {
 	User          string
 	Products      []Product	
 	Tracer opentracing.Tracer
+	MongoSession *mgo.Session
 }
 
 // Product contains all information about a product

@@ -1,7 +1,6 @@
-package main
+package services
 
 import (
-	"strconv"
 	"fmt"
 	"log"
 	"os"
@@ -9,7 +8,7 @@ import (
 	"io/ioutil"
 
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+//	"gopkg.in/mgo.v2/bson"
 	// mgo.v2 is no longer maintained
 )
 
@@ -45,7 +44,7 @@ type DB_Product struct {
 func initializeDatabase(url string, service_name string) *mgo.Session {
 	
 	db_name := fmt.Sprintf("%s-db", service_name)
-	file_name = fmt.Sprintf("./data/%s.json", service_name)
+	file_name := fmt.Sprintf("./data/%s.json", service_name)
 	
 
 	session, err := mgo.Dial(url)
@@ -58,38 +57,25 @@ func initializeDatabase(url string, service_name string) *mgo.Session {
 
 	switch service_name {
 	case "details":
-		initializeDetailsDB()
+		initializeDetailsDB(c, file_name)
 	case "reviews":
-		initializeReviewsDB()
+		initializeReviewsDB(c, file_name)
 	case "ratings":
-		initializeRatingsDB()
-	case "productpage":
-		initializeProductpageDB()
+		initializeRatingsDB(c, file_name)
 	default:
 		log.Fatalf("invalid service name %s", service_name)
 	}
 
-	count, err := c.Find(&bson.M{"ProductId": "1"}).Count()
-	if err != nil {
-		log.Fatal().Msg(err.Error())
-	}
-	if count == 0 {
-		err = c.Insert(&point{"1", 37.7867, -122.4112})
-		if err != nil {
-			log.Fatal().Msg(err.Error())
-		}
-	}
-
 	err = c.EnsureIndexKey("ProductId")
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal("Error on ensure index, err = %v", err)
 	}
 
 	return session
 }
 
 
-func initializeDetailsDB(c mgo.Colllection, data_file string) {
+func initializeDetailsDB(c *mgo.Collection, data_file string) {
 
 	log.Printf("Reading config...")
 	jsonFile, err := os.Open(data_file)
@@ -103,14 +89,17 @@ func initializeDetailsDB(c mgo.Colllection, data_file string) {
 	var result []DB_Detail
 	json.Unmarshal([]byte(byteValue), &result)
 	for _, item := range result {
-		log.Printf("%v", v)
-		c.Insert(&item)
+		log.Printf("inserting item %v", item)
+		err = c.Insert(&item)
+		if err != nil {
+			log.Fatalf("Error on inserting %v, error = %v", item, err)
+		}
 	}
 	log.Printf("Details db init finish!")
 
 }
 
-func initializeRatingsDB(c mgo.Colllection, data_file string) {
+func initializeRatingsDB(c *mgo.Collection, data_file string) {
 
 	log.Printf("Reading config...")
 	jsonFile, err := os.Open(data_file)
@@ -124,14 +113,14 @@ func initializeRatingsDB(c mgo.Colllection, data_file string) {
 	var result []DB_Rating
 	json.Unmarshal([]byte(byteValue), &result)
 	for _, item := range result {
-		log.Printf("%v", v)
+		log.Printf("inserting item %v", item)
 		c.Insert(&item)
 	}
 	log.Printf("Details db init finish!")
 
 }
 
-func initializeReviewsDB(c mgo.Colllection, data_file string) {
+func initializeReviewsDB(c *mgo.Collection, data_file string) {
 
 	log.Printf("Reading config...")
 	jsonFile, err := os.Open(data_file)
@@ -145,14 +134,15 @@ func initializeReviewsDB(c mgo.Colllection, data_file string) {
 	var result []DB_Review
 	json.Unmarshal([]byte(byteValue), &result)
 	for _, item := range result {
-		log.Printf("%v", v)
+		log.Printf("inserting item %v", item)
 		c.Insert(&item)
 	}
 	log.Printf("Details db init finish!")
 
 }
 
-func initializeProductpageDB(c mgo.Colllection, data_file string) {
+func initializeProductpageDB(c *mgo.Collection, data_file string) {
+	panic("unreachable!")
 	// nothing to do
 	return
 }

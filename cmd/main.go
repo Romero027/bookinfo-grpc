@@ -54,20 +54,20 @@ func main() {
 		srv = services.NewDetails(
 			*detailsport, 
 			tracer, 
-			details_mongodb_addr,
+			*details_mongodb_addr,
 		)
 	case "ratings":
 		srv = services.NewRatings(
 			*ratingsport, 
 			tracer, 
-			ratings_mongodb_addr,
+			*ratings_mongodb_addr,
 		)
 	case "reviews":
 		srv = services.NewReviews(
 			*reviewsport,
 			*ratingsaddr,
 			tracer,
-			reviews_mongodb_addr,
+			*reviews_mongodb_addr,
 		)
 	case "productpage":
 		srv = services.NewProductPage(

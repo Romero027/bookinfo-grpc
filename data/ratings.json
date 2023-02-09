@@ -1,0 +1,82 @@
+[
+    {
+        "ProductId": 1,
+        "Ratings": 1
+    },
+    {
+        "ProductId": 2,
+        "Ratings": 2
+    },
+    {
+        "ProductId": 3,
+        "Ratings": 1
+    },
+    {
+        "ProductId": 4,
+        "Ratings": 8
+    },
+    {
+        "ProductId": 5,
+        "Ratings": 2
+    },
+    {
+        "ProductId": 6,
+        "Ratings": 3
+    },
+    {
+        "ProductId": 7,
+        "Ratings": 8
+    },
+    {
+        "ProductId": 8,
+        "Ratings": 10
+    },
+    {
+        "ProductId": 9,
+        "Ratings": 8
+    },
+    {
+        "ProductId": 10,
+        "Ratings": 5
+    },
+    {
+        "ProductId": 11,
+        "Ratings": 1
+    },
+    {
+        "ProductId": 12,
+        "Ratings": 3
+    },
+    {
+        "ProductId": 13,
+        "Ratings": 5
+    },
+    {
+        "ProductId": 14,
+        "Ratings": 10
+    },
+    {
+        "ProductId": 15,
+        "Ratings": 9
+    },
+    {
+        "ProductId": 16,
+        "Ratings": 9
+    },
+    {
+        "ProductId": 17,
+        "Ratings": 5
+    },
+    {
+        "ProductId": 18,
+        "Ratings": 8
+    },
+    {
+        "ProductId": 19,
+        "Ratings": 10
+    },
+    {
+        "ProductId": 20,
+        "Ratings": 1
+    }
+]

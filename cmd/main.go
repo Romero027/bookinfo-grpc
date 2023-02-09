@@ -25,7 +25,12 @@ func main() {
 		detailsaddr     = flag.String("detailsaddr", "details:8081", "reviews service addr")
 		ratingsaddr     = flag.String("ratingsaddr", "ratings:8082", "ratings server addr")
 		reviewsaddr     = flag.String("reviewsaddr", "reviews:8083", "reviews service addr")
+
 		jaegeraddr 		= flag.String("jaegeraddr", "jaeger:6831", "jaeger tracing addr")
+
+		details_mongodb_addr = flag.String("details_mongodb_addr", "mongodb-details:27017", "details mongodb storage addr") 
+		ratings_mongodb_addr = flag.String("ratings_mongodb_addr", "mongodb-ratings:27017", "ratings mongodb storage addr") 
+		reviews_mongodb_addr = flag.String("reviews_mongodb_addr", "mongodb-reviews:27017", "reviews mongodb storage addr") 
 		// detailsaddr     = flag.String("detailsaddr", ":8081", "reviews service addr")
 		// ratingsaddr     = flag.String("ratingsaddr", ":8082", "ratings server addr")
 		// reviewsaddr     = flag.String("reviewsaddr", ":8083", "reviews service addr")
@@ -46,14 +51,23 @@ func main() {
 
 	switch cmd {
 	case "details":
-		srv = services.NewDetails(*detailsport, tracer)
+		srv = services.NewDetails(
+			*detailsport, 
+			tracer, 
+			details_mongodb_addr,
+		)
 	case "ratings":
-		srv = services.NewRatings(*ratingsport, tracer)
+		srv = services.NewRatings(
+			*ratingsport, 
+			tracer, 
+			ratings_mongodb_addr,
+		)
 	case "reviews":
 		srv = services.NewReviews(
 			*reviewsport,
 			*ratingsaddr,
 			tracer,
+			reviews_mongodb_addr,
 		)
 	case "productpage":
 		srv = services.NewProductPage(

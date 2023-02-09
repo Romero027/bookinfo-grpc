@@ -105,7 +105,7 @@ func initializeDetailsDB(c *mgo.Collection, data_file string) {
 				log.Fatalf("Error on inserting %v, error = %v", item, err)
 			}
 		} else if count != 1 {
-			log.Fatalf("Error on count %v, error = %v", item, err)
+			log.Fatalf("Error on count = %v", count)
 		} 
 	}
 	log.Printf("Details db load finish!")
@@ -135,7 +135,7 @@ func initializeRatingsDB(c *mgo.Collection, data_file string) {
 				log.Fatalf("Error on inserting %v, error = %v", item, err)
 			}
 		} else if count != 1 {
-			log.Fatalf("Error on count %v, error = %v", item, err)
+			log.Fatalf("Error on count %v", count)
 		} 
 	}
 	log.Printf("Ratings db load finish!")
@@ -156,15 +156,14 @@ func initializeReviewsDB(c *mgo.Collection, data_file string) {
 	var result []DB_Review
 	json.Unmarshal([]byte(byteValue), &result)
 	for _, item := range result {
-		count, err := c.Find(&bson.M{"ProductID": item.ProductID}).Count()
-		if err != nil && count == 0 {
+		_, err := c.Find(&bson.M{"ProductID": item.ProductID}).Count()
+		if err != nil {
 			err = c.Insert(&item)
 			if err != nil {
 				log.Fatalf("Error on inserting %v, error = %v", item, err)
 			}
-		} else if count != 1 {
-			log.Fatalf("Error on count %v, error = %v", item, err)
-		}
+		} 
+		// TODO do not reinsert reviews
 	}
 	log.Printf("Reviews db load finish!")
 

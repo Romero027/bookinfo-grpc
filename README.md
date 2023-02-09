@@ -15,7 +15,6 @@ You can use `. ./scripts/k8s_setup.sh` and `. ./install.sh` to install/build kub
 ## Build docker images and push them to docker hub
 
 ```bash
-python3 ./scripts/data_gen.py # generate data in ./data, optional
 sudo bash build-images.sh # you need to change the username and run docker login
 ```
 
@@ -26,6 +25,16 @@ kubectl apply -Rf ./kubernetes/apply
 kubectl get pods
 ```
 
+
+## Storage
+
+We use mongodb as persistent storage, `product` info is readonly and is loaded from file. 
+Other data are initialized from `./data/<name>.json` and stored in corresponding mongodb. 
+
+```bash
+python3 ./scripts/data_gen.py # generate data for initialization, optional
+sudo rm -rf /data/volumes # clean the mongodb data
+```
 
 ## Run load generator
 

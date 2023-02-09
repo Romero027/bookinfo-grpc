@@ -80,6 +80,7 @@ func (s *Details) Run() error {
 func (s *Details) GetDetails(ctx context.Context, req *details.Product) (*details.Result, error) {
 	res := new(details.Result)
 	id := req.GetId()
+	log.Printf("Recevied request id = %v", id)
 	session := s.MongoSession.Copy()
 	defer session.Close()
 	c := session.DB("details-db").C("details")
@@ -90,7 +91,7 @@ func (s *Details) GetDetails(ctx context.Context, req *details.Product) (*detail
 	if err != nil {
 		log.Fatalf("Try to find product id [%v], err = ", id, err.Error())
 	}
-
+	log.Prinf("Got %v", result)
 	detail1 := details.Detail{
 		ProductID: req.GetId(),
 		Author:    result.Author,

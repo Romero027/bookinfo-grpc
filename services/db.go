@@ -54,7 +54,7 @@ func initializeDatabase(url string, service_name string) *mgo.Session {
 	}
 	
 	c := session.DB(db_name).C(service_name)
-	log.Println("New session for [%s] successfull...", service_name)
+	log.Printf("mongodb session for [%s] successfull...", service_name)
 
 	switch service_name {
 	case "details":

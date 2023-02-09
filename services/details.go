@@ -18,6 +18,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 
 )
 
@@ -84,7 +85,7 @@ func (s *Details) GetDetails(ctx context.Context, req *details.Product) (*detail
 	c := session.DB("details-db").C("details")
 
 	var result DB_Detail;
-	err = c.Find(&bson.M{"ProductID": id}).One(&result)
+	err := c.Find(&bson.M{"ProductID": id}).One(&result)
 
 	if err != nil {
 		log.Fatalf("Try to find product id [%v], err = ", id, err.Error())

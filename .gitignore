@@ -3,4 +3,7 @@
 .vscode/*
 /istio-1.14.1/
 /istio-1.14.1/*
+/data/*
 bcc
+wrk
+wrk/*

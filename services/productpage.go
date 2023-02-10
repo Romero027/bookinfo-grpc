@@ -9,8 +9,8 @@ import (
 	"net/http"
     "math/rand"
 
-	"github.com/livingshade/bookinfo-grpc/proto/details"
-	"github.com/livingshade/bookinfo-grpc/proto/reviews"
+	"github.com/Romero027/bookinfo-grpc/proto/details"
+	"github.com/Romero027/bookinfo-grpc/proto/reviews"
 	"google.golang.org/grpc"
 
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"

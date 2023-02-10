@@ -8,10 +8,10 @@ Similarly, it will replace $go_old by $go_new in all `*.go` files and `Dockfile`
 import sys
 import os
 
-docker_old = "xzhu0027"
-docker_new = "livingshade"
-go_old = "Romero027"
-go_new = "livingshade"
+docker_old = "livingshade"
+docker_new = "xzhu0027"
+go_old = "livingshade"
+go_new = "Romero027"
 
 def replace(path, old, new):
     with open(path, "r") as f:

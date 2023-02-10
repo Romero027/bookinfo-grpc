@@ -44,7 +44,7 @@ spec:
       serviceAccountName: bookinfo-details
       containers:
       - name: details
-        image: livingshade/bookinfo_grpc_details:latest
+        image: xzhu0027/bookinfo_grpc_details:latest
         command: ["/go/bin/cmd"]
         args: ["details"]
         imagePullPolicy: Always

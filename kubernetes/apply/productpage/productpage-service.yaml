@@ -46,7 +46,7 @@ spec:
       serviceAccountName: bookinfo-productpage
       containers:
       - name: productpage
-        image: livingshade/bookinfo_grpc_productpage
+        image: xzhu0027/bookinfo_grpc_productpage
         command: ["/go/bin/cmd"]
         args: ["productpage"]
         imagePullPolicy: Always

@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	services "github.com/livingshade/bookinfo-grpc/services"
-	"github.com/livingshade/bookinfo-grpc/tracing"
+	services "github.com/Romero027/bookinfo-grpc/services"
+	"github.com/Romero027/bookinfo-grpc/tracing"
 
 )
 

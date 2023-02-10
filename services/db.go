@@ -39,7 +39,8 @@ type DB_Rating struct {
 }
 
 type DB_Product struct {
-
+	ProductID int32
+	Title string
 }
 
 func initializeDatabase(url string, service_name string) *mgo.Session {
@@ -136,7 +137,8 @@ func initializeRatingsDB(c *mgo.Collection, data_file string) {
 			}
 		} else if count != 1 {
 			log.Fatalf("Error on count %v", count)
-		} 
+		}
+		log.Printf("On %v, count = %v", item, count) 
 	}
 	log.Printf("Ratings db load finish!")
 
@@ -158,20 +160,42 @@ func initializeReviewsDB(c *mgo.Collection, data_file string) {
 	for _, item := range result {
 		_, err := c.Find(&bson.M{"ProductID": item.ProductID}).Count()
 		if err != nil {
+			log.Fatalf("Error on checking %v", err)
+		} else {
 			err = c.Insert(&item)
 			if err != nil {
 				log.Fatalf("Error on inserting %v, error = %v", item, err)
 			}
-		} 
+		}
+		// count, err = c.Find(&bson.M{"ProductID": item.ProductID}).Count()
+		//log.Printf("On %v, count = %v, id = %v", item, count, item.ProductID)
 		// TODO do not reinsert reviews
 	}
 	log.Printf("Reviews db load finish!")
 
 }
 
-func initializeProductpageDB(c *mgo.Collection, data_file string) {
-	panic("unreachable!")
-	// This is done in initializeProducts
-	// nothing to do
-	return
+func (s *ProductPage) initializeProducts() {
+	data_file := "./data/products.json"
+	//! For simplicity, products are read-only and load from file rather than mongodb
+	jsonFile, err := os.Open(data_file)
+	if err != nil {
+		log.Fatalf("Got error while reading data: %v", err)
+	}
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var result []DB_Product
+	json.Unmarshal([]byte(byteValue), &result)
+	
+	for _, item := range(result) {
+		log.Printf("Item %v", item)
+		s.Products = append(s.Products, Product{
+			ProductID: int(item.ProductID),
+			Title: item.Title,
+		})
+	}
+
+	log.Printf("Products loaded from file, %v in total", len(s.Products))
 }

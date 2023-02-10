@@ -8,8 +8,6 @@ import (
 	"log"
 	"net/http"
     "math/rand"
-	"os"
-	"io/ioutil"
 
 	"github.com/livingshade/bookinfo-grpc/proto/details"
 	"github.com/livingshade/bookinfo-grpc/proto/reviews"
@@ -22,19 +20,9 @@ import (
 
 )
 
-func (s *ProductPage) initializeProducts() {
-	data_file := "./data/products.json"
-	//! For simplicity, products are read-only and load from file rather than mongodb
-	jsonFile, err := os.Open(data_file)
-	if err != nil {
-		log.Fatalf("Got error while reading data: %v", err)
-	}
-	defer jsonFile.Close()
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-	json.Unmarshal([]byte(byteValue), &s.Products)
-	log.Printf("Products loaded from file, %v in total", len(s.Products))
-}
+
+
 
 func dial(addr string, tracer opentracing.Tracer) *grpc.ClientConn {
 	opts := []grpc.DialOption{
@@ -76,7 +64,7 @@ type ProductPage struct {
 
 // Product contains all information about a product
 type Product struct {
-	ID      int
+	ProductID  int
 	Title   string
 	Reviews []*reviews.Review
 	Details []*details.Detail
@@ -131,14 +119,14 @@ func (s *ProductPage) productpageHandler(w http.ResponseWriter, r *http.Request)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	ctx := r.Context()
 	// TODO parse request header
-	productID := rand.Intn(5)
-	log.Printf("Sending request to reviews service")
+	productID := rand.Intn(len(s.Products) - 1)
+	log.Printf("Sending request to reviews service for id %v", productID)
 	reviewsRes, err := s.getProductReviews(ctx, productID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	log.Printf("Got reviews result len: %v", len(reviewsRes.Review))
+	//log.Printf("Got reviews result len: %v", len(reviewsRes.Review))
 	log.Printf("Sending request to details service")
 	detailRes, err := s.getProductDetails(ctx, productID)
 	if err != nil {
@@ -146,7 +134,7 @@ func (s *ProductPage) productpageHandler(w http.ResponseWriter, r *http.Request)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	log.Printf("Got details results: %v", detailRes)
+	//log.Printf("Got details results: %v", detailRes)
 	s.Products[productID].Reviews = reviewsRes.Review
 	s.Products[productID].Details = detailRes.Detail
 	s.Products[productID].Stars = -1

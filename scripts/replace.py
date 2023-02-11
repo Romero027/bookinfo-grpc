@@ -24,7 +24,7 @@ for root, dirs, files in os.walk(".", topdown=False):
     for file in files: 
         path = str(root + "/" + file)
         name = file.split('.')
-        if name == "Dockerfile":
+        if file == "Dockerfile":
             replace(path, go_old, go_new)
         elif len(name) == 2:
             if name[1] == "go" or name[1] == "yaml":

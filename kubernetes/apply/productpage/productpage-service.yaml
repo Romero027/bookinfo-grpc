@@ -1,0 +1,55 @@
+
+##################################################################################################
+# Productpage services and deployment
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: productpage
+  labels:
+    app: productpage
+    service: productpage
+spec:
+  clusterIP: 10.96.88.88
+  ports:
+  - port: 8080
+    name: http
+  selector:
+    app: productpage
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bookinfo-productpage
+  labels:
+    account: productpage
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: productpage-v1
+  labels:
+    app: productpage
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: productpage
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: productpage
+        version: v1
+    spec:
+      serviceAccountName: bookinfo-productpage
+      containers:
+      - name: productpage
+        image: xzhu0027/bookinfo_grpc_productpage
+        command: ["/go/bin/cmd"]
+        args: ["productpage"]
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+---

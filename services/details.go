@@ -17,15 +17,18 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 
 )
 
 // NewDetails returns a new server
-func NewDetails(port int, tracer opentracing.Tracer) *Details {
+func NewDetails(port int, tracer opentracing.Tracer, db_url string) *Details {
 	return &Details{
 		name: "details-server",
 		port: port,
 		Tracer: tracer,
+		MongoSession: initializeDatabase(db_url, "details"),
 	}
 }
 
@@ -35,6 +38,8 @@ type Details struct {
 	port int
 	details.DetailsServer
 	Tracer opentracing.Tracer
+	MongoSession 	*mgo.Session
+
 }
 
 // Run starts the server
@@ -71,20 +76,30 @@ func (s *Details) Run() error {
 }
 
 // GetDetails returns the details of a product
-// TODO: Add a persistent storage or use online information
 func (s *Details) GetDetails(ctx context.Context, req *details.Product) (*details.Result, error) {
 	res := new(details.Result)
+	id := req.GetId()
+	
+	session := s.MongoSession.Copy()
+	defer session.Close()
+	c := session.DB("details-db").C("details")
+
+	var result DB_Detail;
+	err := c.Find(&bson.M{"ProductID": int(id)}).One(&result)
+	if err != nil {
+		log.Fatalf("Try to find product id [%v], err = %v", id, err.Error())
+	}
 
 	detail1 := details.Detail{
 		ProductID: req.GetId(),
-		Author:    "William Shakespeare",
-		Year:      1595,
-		Type:      "paperback",
-		Pages:     200,
-		Publisher: "PublisherA",
-		Language:  "English",
-		ISBN10:    "1234567890",
-		ISBN13:    "123-1234567890",
+		Author:    result.Author,
+		Year:      result.Year,
+		Type:      result.Type,
+		Pages:     result.Pages,
+		Publisher: result.Publisher,
+		Language:  result.Language,
+		ISBN10:    result.ISBN10,
+		ISBN13:    result.ISBN13,
 	}
 
 	res.Detail = append(res.Detail, &detail1)

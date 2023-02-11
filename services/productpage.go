@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+    "math/rand"
 
 	"github.com/Romero027/bookinfo-grpc/proto/details"
 	"github.com/Romero027/bookinfo-grpc/proto/reviews"
@@ -14,18 +15,14 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	"github.com/opentracing/opentracing-go"
+
+	"gopkg.in/mgo.v2"
+
 )
 
-func (s *ProductPage) initializeProucts() {
-	s.Products = []Product{{
-		ID:    0,
-		Title: "The Comedy of Errors",
-	}, {
-		ID:    1,
-		Title: "1984",
-	},
-	}
-}
+
+
+
 
 func dial(addr string, tracer opentracing.Tracer) *grpc.ClientConn {
 	opts := []grpc.DialOption{
@@ -50,6 +47,7 @@ func NewProductPage(port int, reviewsddr string, detailsaddr string, tracer open
 		reviewsClient: reviews.NewReviewsClient(dial(reviewsddr, tracer)),
 		User:          "None",
 		Tracer: tracer,
+		MongoSession: nil,
 	}
 }
 
@@ -61,11 +59,12 @@ type ProductPage struct {
 	User          string
 	Products      []Product	
 	Tracer opentracing.Tracer
+	MongoSession *mgo.Session
 }
 
 // Product contains all information about a product
 type Product struct {
-	ID      int
+	ProductID  int
 	Title   string
 	Reviews []*reviews.Review
 	Details []*details.Detail
@@ -96,8 +95,8 @@ func (s *ProductPage) Run() error {
 	http.HandleFunc("/reviews", s.reviewsHandler)
 	http.HandleFunc("/details", s.detailsHandler)
 	
+	s.initializeProducts()
 	log.Printf("ProductPage server running at port: %d", s.port)
-	s.initializeProucts()
 	return http.ListenAndServe(fmt.Sprintf(":%d", s.port), nil)
 }
 
@@ -119,26 +118,27 @@ func (s *ProductPage) logoutHandler(w http.ResponseWriter, r *http.Request) {
 func (s *ProductPage) productpageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	ctx := r.Context()
-	productID := 0
-	log.Printf("Sending request to reviews service")
+	// TODO parse request header
+	productID := rand.Intn(len(s.Products) - 1)
+	log.Printf("Sending request to reviews service for id %v", productID)
 	reviewsRes, err := s.getProductReviews(ctx, productID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	//log.Printf("Got reviews result len: %v", len(reviewsRes.Review))
 	log.Printf("Sending request to details service")
 	detailRes, err := s.getProductDetails(ctx, productID)
 	if err != nil {
+		log.Printf("Got error %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	//log.Printf("Got details results: %v", detailRes)
 	s.Products[productID].Reviews = reviewsRes.Review
 	s.Products[productID].Details = detailRes.Detail
 	s.Products[productID].Stars = -1
 	s.Products[productID].Color = "None"
-	log.Printf("%v", reviewsRes)
 	if stars := reviewsRes.GetStars(); stars != 0 {
 		s.Products[productID].Stars = int(stars)
 		s.Products[productID].Color = reviewsRes.GetColor()
@@ -193,6 +193,7 @@ func (s *ProductPage) detailsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *ProductPage) getProductDetails(ctx context.Context, id int) (*details.Result, error) {
+	log.Printf("Sending to get details id = %v", id)
 	detailRes, err := s.detailsClient.GetDetails(ctx, &details.Product{
 		Id: int32(id),
 	})

@@ -1,0 +1,28 @@
+# volume and persistent volume claim of `reviews`
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: reviews-pv
+spec:
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  storageClassName: reviews-storage
+  hostPath:
+    path: /data/volumes/reviews-pv   # Where all the hard drives are mounted
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: reviews-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: reviews-storage
+  resources:
+    requests:
+      storage: 1Gi
+---

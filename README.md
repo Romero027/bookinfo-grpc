@@ -21,11 +21,20 @@ sudo bash build-images.sh # you need to change the username and run docker login
 ## Run Bookinfo Applicaton
 
 ```bash
-kubectl apply -f ./kubernetes/bookinfo-grpc.yaml
-kubectl apply -f ./kubernetes/jaeger.yaml
+kubectl apply -Rf ./kubernetes/apply
 kubectl get pods
 ```
 
+
+## Storage
+
+We use mongodb as persistent storage, `product` info is readonly and is loaded from file. 
+Other data are initialized from `./data/<name>.json` and stored in corresponding mongodb. 
+
+```bash
+python3 ./scripts/data_gen.py # generate data for initialization, optional
+sudo rm -rf /data/volumes # clean the mongodb data
+```
 
 ## Run load generator
 

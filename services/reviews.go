@@ -14,15 +14,19 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+
 )
 
 // NewReviews returns a new server
-func NewReviews(port int, ratingsaddr string, tracer opentracing.Tracer) *Reviews {
+func NewReviews(port int, ratingsaddr string, tracer opentracing.Tracer, db_url string) *Reviews {
 	return &Reviews{
 		name:          "reviews-server",
 		port:          port,
 		ratingsClient: ratings.NewRatingsClient(dial(ratingsaddr, tracer)),
 		Tracer: tracer,
+		MongoSession: initializeDatabase(db_url, "reviews"),
 	}
 }
 
@@ -33,6 +37,8 @@ type Reviews struct {
 	ratingsClient ratings.RatingsClient
 	reviews.ReviewsServer
 	Tracer opentracing.Tracer
+	MongoSession *mgo.Session
+
 }
 
 // Run starts the server
@@ -57,32 +63,38 @@ func (s *Reviews) Run() error {
 }
 
 // GetReviews returns the reviews of a product
-// TODO: Add a persistent storage or use online information
 func (s *Reviews) GetReviews(ctx context.Context, req *reviews.Product) (*reviews.Result, error) {
 	res := new(reviews.Result)
 
 	productID := req.GetId()
-
-	// TODO: Add a persistent storage for reviews
-	review1 := reviews.Review{
-		ProductID: productID,
-		Reviewer:  "reviewer1",
-		Text:      "An extremely entertaining play by Shakespeare. The slapstick humour is refreshing!",
+	session := s.MongoSession.Copy()
+	defer session.Close()
+	c := session.DB("reviews-db").C("reviews")
+	var result []DB_Review;
+	err := c.Find(&bson.M{"ProductID": int(productID)}).All(&result)
+	if err != nil {
+		log.Fatalf("Try to find product id [%v], err = %v", productID, err.Error())
 	}
 
-	review2 := reviews.Review{
-		ProductID: productID,
-		Reviewer:  "reviewer2",
-		Text:      "Absolutely fun and entertaining. The play lacks thematic depth when compared to other plays by Shakespeare.",
+	for _, item := range result {
+		res.Review = append(res.Review, &reviews.Review{
+			ProductID: productID,
+			Reviewer: item.Reviewer,
+			Text: item.Text,
+		})
+		// correctness, and for future in-memory cache
+		// rate_json, err := json.Marshal(item)
+		// if err != nil {
+		// 	log.Fatalf("Failed to marshal [Code: %v] with error: %v", r.Code, err)
+		// }
 	}
+	log.Printf("Got result num %v, id = %v", len(res.Review), productID)
 
 	version := os.Getenv("REVIEWS_VERSION")
 
-	res.Review = append(res.Review, &review1)
-	res.Review = append(res.Review, &review2)
 
 	if version != "v1" {
-		log.Printf("Sending request to ratings service")
+		log.Printf("Sending request to ratings service, id = %v", productID)
 		ratingsRes, err := s.ratingsClient.GetRatings(ctx, &ratings.Product{
 			Id: int32(productID),
 		})

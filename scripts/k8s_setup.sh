@@ -31,7 +31,7 @@ echo \
 
 
 sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd -y
+sudo apt-get install docker-ce docker-ce-cli containerd.io -y
 
 sudo mkdir -p /etc/docker
 sudo mkdir -p ${DOCKER_DATA_ROOT}

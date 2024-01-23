@@ -9,6 +9,7 @@ service Reviews {
 
 message Product {
     int32 id = 1;
+    string user = 2;
 }
 
 message Review {
@@ -19,6 +20,7 @@ message Review {
 
 message Result {
     repeated Review review = 1;
-    optional int32 stars = 4; 
-    optional string color = 5;
+    string user = 2;
+    int32 stars = 4; 
+    string color = 5;
 }

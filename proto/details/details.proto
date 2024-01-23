@@ -9,6 +9,7 @@ service Details {
 
 message Product {
     int32 id = 1;
+    string user = 2;
 }
 
 message Detail {
@@ -25,4 +26,5 @@ message Detail {
 
 message Result {
     repeated Detail detail = 1;
+    string user = 2;
 }

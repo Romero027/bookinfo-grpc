@@ -43,11 +43,12 @@ spec:
         app: productpage
         version: v1
     spec:
+      nodeName: h2.hotel.meshbench-pg0.clemson.cloudlab.us
       serviceAccountName: bookinfo-productpage
       containers:
       - name: productpage
-        image: xzhu0027/bookinfo_grpc_productpage
-        command: ["/go/bin/cmd"]
+        image: xzhu0027/bookinfo_grpc:test
+        command: ["/app/bookinfo"]
         args: ["productpage"]
         imagePullPolicy: Always
         ports:

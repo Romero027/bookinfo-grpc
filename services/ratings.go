@@ -9,20 +9,19 @@ import (
 	"github.com/Romero027/bookinfo-grpc/proto/ratings"
 	"google.golang.org/grpc"
 
-	"github.com/opentracing/opentracing-go"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	"github.com/opentracing/opentracing-go"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-
 )
 
 // NewRatings returns a new server
 func NewRatings(port int, tracer opentracing.Tracer, db_url string) *Ratings {
 	return &Ratings{
-		name: "ratings-server",
-		port: port,
-		Tracer: tracer,
+		name:         "ratings-server",
+		port:         port,
+		Tracer:       tracer,
 		MongoSession: initializeDatabase(db_url, "ratings"),
 	}
 }
@@ -32,7 +31,7 @@ type Ratings struct {
 	name string
 	port int
 	ratings.RatingsServer
-	Tracer opentracing.Tracer
+	Tracer       opentracing.Tracer
 	MongoSession *mgo.Session
 }
 
@@ -59,22 +58,22 @@ func (s *Ratings) Run() error {
 
 // GetRatings returns the rating of a product from 1 to 5 stars (currently always return 5)
 func (s *Ratings) GetRatings(ctx context.Context, req *ratings.Product) (*ratings.Result, error) {
+	log.Printf("GetRatings request with id = %v, username = %v", req.GetId(), req.GetUser())
 	res := new(ratings.Result)
 	id := req.GetId()
-
 
 	session := s.MongoSession.Copy()
 	defer session.Close()
 	c := session.DB("ratings-db").C("ratings")
 
-	var result DB_Rating;
+	var result DB_Rating
 	err := c.Find(&bson.M{"ProductID": int(id)}).One(&result)
 	if err != nil {
 		log.Fatalf("Try to find product id [%v], err = %v", id, err.Error())
 	}
 	log.Printf("Got rating %v, id = %v", result, id)
 
-
 	res.Ratings = result.Ratings
+	res.User = req.GetUser()
 	return res, nil
 }

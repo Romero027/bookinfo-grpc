@@ -11,12 +11,11 @@ import (
 	"github.com/Romero027/bookinfo-grpc/proto/reviews"
 	"google.golang.org/grpc"
 
-	"github.com/opentracing/opentracing-go"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	"github.com/opentracing/opentracing-go"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-
 )
 
 // NewReviews returns a new server
@@ -25,8 +24,8 @@ func NewReviews(port int, ratingsaddr string, tracer opentracing.Tracer, db_url 
 		name:          "reviews-server",
 		port:          port,
 		ratingsClient: ratings.NewRatingsClient(dial(ratingsaddr, tracer)),
-		Tracer: tracer,
-		MongoSession: initializeDatabase(db_url, "reviews"),
+		Tracer:        tracer,
+		MongoSession:  initializeDatabase(db_url, "reviews"),
 	}
 }
 
@@ -36,9 +35,8 @@ type Reviews struct {
 	port          int
 	ratingsClient ratings.RatingsClient
 	reviews.ReviewsServer
-	Tracer opentracing.Tracer
+	Tracer       opentracing.Tracer
 	MongoSession *mgo.Session
-
 }
 
 // Run starts the server
@@ -64,13 +62,14 @@ func (s *Reviews) Run() error {
 
 // GetReviews returns the reviews of a product
 func (s *Reviews) GetReviews(ctx context.Context, req *reviews.Product) (*reviews.Result, error) {
+	log.Printf("GetReviews request with id = %v, username = %v", req.GetId(), req.GetUser())
 	res := new(reviews.Result)
 
 	productID := req.GetId()
 	session := s.MongoSession.Copy()
 	defer session.Close()
 	c := session.DB("reviews-db").C("reviews")
-	var result []DB_Review;
+	var result []DB_Review
 	err := c.Find(&bson.M{"ProductID": int(productID)}).All(&result)
 	if err != nil {
 		log.Fatalf("Try to find product id [%v], err = %v", productID, err.Error())
@@ -79,8 +78,8 @@ func (s *Reviews) GetReviews(ctx context.Context, req *reviews.Product) (*review
 	for _, item := range result {
 		res.Review = append(res.Review, &reviews.Review{
 			ProductID: productID,
-			Reviewer: item.Reviewer,
-			Text: item.Text,
+			Reviewer:  item.Reviewer,
+			Text:      item.Text,
 		})
 		// correctness, and for future in-memory cache
 		// rate_json, err := json.Marshal(item)
@@ -92,27 +91,29 @@ func (s *Reviews) GetReviews(ctx context.Context, req *reviews.Product) (*review
 
 	version := os.Getenv("REVIEWS_VERSION")
 
-
 	if version != "v1" {
 		log.Printf("Sending request to ratings service, id = %v", productID)
 		ratingsRes, err := s.ratingsClient.GetRatings(ctx, &ratings.Product{
-			Id: int32(productID),
+			Id:   int32(productID),
+			User: req.GetUser(),
 		})
 		if err != nil {
 			return nil, err
 		}
 
 		rating := ratingsRes.GetRatings()
-		res.Stars = &rating
+		res.Stars = rating
 
 		if version == "v2" {
 			color := "green"
-			res.Color = &color
+			res.Color = color
 		} else {
 			color := "red"
-			res.Color = &color
+			res.Color = color
 		}
+
 	}
 
+	res.User = req.GetUser()
 	return res, nil
 }

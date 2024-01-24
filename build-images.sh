@@ -6,13 +6,14 @@ set -ex
 
 EXEC=docker
 
-USER=$DOCKER_USER
+USER="xzhu0027"
 
-TAG="latest"
+TAG="test"
 
-for i in productpage ratings reviews details
+# for i in productpage ratings reviews details
+for i in bookinfo_grpc
 do
-  IMAGE=bookinfo_grpc_${i}
+  IMAGE=${i}
   echo Processing image ${IMAGE}
   $EXEC build -t "$USER"/"$IMAGE":"$TAG" -f Dockerfile .
   $EXEC push "$USER"/"$IMAGE":"$TAG"

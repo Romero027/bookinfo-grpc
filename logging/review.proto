@@ -1,0 +1,24 @@
+syntax = "proto3";
+option go_package = "./proto/reviews";
+
+package reviews;
+
+service Reviews {
+    rpc getReviews(Product) returns (Result);
+}
+
+message Product {
+    int32 id = 1;
+}
+
+message Review {
+    int32 ProductID = 1;
+    string reviewer = 2;
+    string text = 3;
+}
+
+message Result {
+    repeated Review review = 1;
+    optional int32 stars = 4; 
+    optional string color = 5;
+}

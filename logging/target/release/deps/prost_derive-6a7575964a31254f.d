@@ -1,0 +1,11 @@
+/users/xzhu/bookinfo-grpc/logging/target/release/deps/libprost_derive-6a7575964a31254f.so: /users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/lib.rs /users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/mod.rs /users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/group.rs /users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/map.rs /users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/message.rs /users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/oneof.rs /users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/scalar.rs
+
+/users/xzhu/bookinfo-grpc/logging/target/release/deps/prost_derive-6a7575964a31254f.d: /users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/lib.rs /users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/mod.rs /users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/group.rs /users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/map.rs /users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/message.rs /users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/oneof.rs /users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/scalar.rs
+
+/users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/lib.rs:
+/users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/mod.rs:
+/users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/group.rs:
+/users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/map.rs:
+/users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/message.rs:
+/users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/oneof.rs:
+/users/xzhu/.cargo/registry/src/index.crates.io-6f17d22bba15001f/prost-derive-0.11.9/src/field/scalar.rs:

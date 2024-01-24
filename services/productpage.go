@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"math/rand"
 	"net/http"
-    "math/rand"
 
 	"github.com/Romero027/bookinfo-grpc/proto/details"
 	"github.com/Romero027/bookinfo-grpc/proto/reviews"
@@ -17,12 +17,7 @@ import (
 	"github.com/opentracing/opentracing-go"
 
 	"gopkg.in/mgo.v2"
-
 )
-
-
-
-
 
 func dial(addr string, tracer opentracing.Tracer) *grpc.ClientConn {
 	opts := []grpc.DialOption{
@@ -46,8 +41,8 @@ func NewProductPage(port int, reviewsddr string, detailsaddr string, tracer open
 		detailsClient: details.NewDetailsClient(dial(detailsaddr, tracer)),
 		reviewsClient: reviews.NewReviewsClient(dial(reviewsddr, tracer)),
 		User:          "None",
-		Tracer: tracer,
-		MongoSession: nil,
+		Tracer:        tracer,
+		MongoSession:  nil,
 	}
 }
 
@@ -57,19 +52,19 @@ type ProductPage struct {
 	detailsClient details.DetailsClient
 	reviewsClient reviews.ReviewsClient
 	User          string
-	Products      []Product	
-	Tracer opentracing.Tracer
-	MongoSession *mgo.Session
+	Products      []Product
+	Tracer        opentracing.Tracer
+	MongoSession  *mgo.Session
 }
 
 // Product contains all information about a product
 type Product struct {
-	ProductID  int
-	Title   string
-	Reviews []*reviews.Review
-	Details []*details.Detail
-	Stars   int
-	Color   string
+	ProductID int
+	Title     string
+	Reviews   []*reviews.Review
+	Details   []*details.Detail
+	Stars     int
+	Color     string
 }
 
 // Run the server
@@ -85,7 +80,7 @@ func (s *ProductPage) Run() error {
 	// mux.HandleFunc("/products", http.HandlerFunc(s.productsHandler))
 	// mux.HandleFunc("/reviews", http.HandlerFunc(s.reviewsHandler))
 	// mux.HandleFunc("/details", http.HandlerFunc(s.detailsHandler))
-	
+
 	http.Handle("/", http.FileServer(http.Dir("static")))
 	http.Handle("/index", http.FileServer(http.Dir("static")))
 	http.HandleFunc("/login", s.loginHandler)
@@ -94,7 +89,7 @@ func (s *ProductPage) Run() error {
 	http.HandleFunc("/products", s.productsHandler)
 	http.HandleFunc("/reviews", s.reviewsHandler)
 	http.HandleFunc("/details", s.detailsHandler)
-	
+
 	s.initializeProducts()
 	log.Printf("ProductPage server running at port: %d", s.port)
 	return http.ListenAndServe(fmt.Sprintf(":%d", s.port), nil)
@@ -118,17 +113,19 @@ func (s *ProductPage) logoutHandler(w http.ResponseWriter, r *http.Request) {
 func (s *ProductPage) productpageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	ctx := r.Context()
+	username := r.URL.Query().Get("username")
+
 	// TODO parse request header
 	productID := rand.Intn(len(s.Products) - 1)
 	log.Printf("Sending request to reviews service for id %v", productID)
-	reviewsRes, err := s.getProductReviews(ctx, productID)
+	reviewsRes, err := s.getProductReviews(ctx, productID, username)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	//log.Printf("Got reviews result len: %v", len(reviewsRes.Review))
 	log.Printf("Sending request to details service")
-	detailRes, err := s.getProductDetails(ctx, productID)
+	detailRes, err := s.getProductDetails(ctx, productID, username)
 	if err != nil {
 		log.Printf("Got error %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -163,10 +160,12 @@ func (s *ProductPage) productsHandler(w http.ResponseWriter, r *http.Request) {
 func (s *ProductPage) reviewsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	ctx := r.Context()
-	// productID, err := strconv.Atoi(r.URL.Query().Get("productID"))
+	username := r.URL.Query().Get("username")
 	productID := 0
 
-	reviewsRes, err := s.getProductReviews(ctx, productID)
+	log.Printf("reviewsHandler got a request id = %v, username = %v", productID, username)
+
+	reviewsRes, err := s.getProductReviews(ctx, productID, username)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -180,9 +179,12 @@ func (s *ProductPage) detailsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	ctx := r.Context()
 	// productID, err := strconv.Atoi(r.URL.Query().Get("productID"))
+	username := r.URL.Query().Get("username")
 	productID := 0
 
-	detailRes, err := s.getProductDetails(ctx, productID)
+	log.Printf("detailsHandler got a request id = %v, username = %v", productID, username)
+
+	detailRes, err := s.getProductDetails(ctx, productID, username)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -192,17 +194,19 @@ func (s *ProductPage) detailsHandler(w http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(w).Encode(detailRes)
 }
 
-func (s *ProductPage) getProductDetails(ctx context.Context, id int) (*details.Result, error) {
+func (s *ProductPage) getProductDetails(ctx context.Context, id int, username string) (*details.Result, error) {
 	log.Printf("Sending to get details id = %v", id)
 	detailRes, err := s.detailsClient.GetDetails(ctx, &details.Product{
-		Id: int32(id),
+		Id:   int32(id),
+		User: username,
 	})
 	return detailRes, err
 }
 
-func (s *ProductPage) getProductReviews(ctx context.Context, id int) (*reviews.Result, error) {
+func (s *ProductPage) getProductReviews(ctx context.Context, id int, username string) (*reviews.Result, error) {
 	reviewsRes, err := s.reviewsClient.GetReviews(ctx, &reviews.Product{
-		Id: int32(id),
+		Id:   int32(id),
+		User: username,
 	})
 	return reviewsRes, err
 }

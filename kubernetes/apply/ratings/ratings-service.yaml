@@ -12,7 +12,7 @@ metadata:
 spec:
   ports:
   - port: 8082
-    name: grpc
+    name: ratings
   selector:
     app: ratings
 ---
@@ -42,13 +42,14 @@ spec:
         app: ratings
         version: v1
     spec:
+      nodeName: h2.hotel.meshbench-pg0.clemson.cloudlab.us
       serviceAccountName: bookinfo-ratings
       containers:
       - name: ratings
-        image: xzhu0027/bookinfo_grpc_ratings:latest
-        command: ["/go/bin/cmd"]
+        image: xzhu0027/bookinfo_grpc:test
+        command: ["/app/bookinfo"]
         args: ["ratings"]
-        imagePullPolicy: Always
+        # imagePullPolicy: Always
         ports:
         - containerPort: 8082
 ---

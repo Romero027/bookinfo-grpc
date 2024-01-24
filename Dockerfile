@@ -1,5 +1,19 @@
-
-FROM golang:1.18
-COPY . /go/src/github.com/Romero027/bookinfo-grpc
-WORKDIR /go/src/github.com/Romero027/bookinfo-grpc
-RUN go install -ldflags="-s -w" ./cmd/...
+# Use a minimal base image for the final container
+FROM golang:1.18-alpine as builder
+# Set the working directory inside the container
+WORKDIR /app
+# Copy only the necessary Go mod files to cache dependencies
+COPY go.mod go.sum ./
+# Download and cache Go dependencies
+RUN go mod download
+# Copy the entire project directory to the container
+COPY . .
+# Build the Go application with optimized flags
+RUN go build -ldflags="-s -w" -o /app/bookinfo ./cmd/...
+# Use a minimal base image for the final container
+FROM alpine:latest
+# Set the working directory inside the container
+WORKDIR /app
+# Copy the built binary from the builder stage
+COPY --from=builder /app/bookinfo .
+COPY --from=builder /app/data /app/data

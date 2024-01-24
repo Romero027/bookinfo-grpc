@@ -37,6 +37,7 @@ spec:
       labels:
         service: mongodb-details
     spec:
+      nodeName: h2.hotel.meshbench-pg0.clemson.cloudlab.us
       containers:
         - image: mongo:4.4.6
           name: bookinfo-details-mongo
